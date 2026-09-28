@@ -1,0 +1,21 @@
+{
+  "instance": "scpb4",
+  "algorithm": "greedy_pure",
+  "mode": "budgeted",
+  "budget_level": "75%",
+  "budget_value": 59,
+  "status": "greedy",
+  "objective": 169,
+  "cost": 59,
+  "selected_packages": [
+    363,
+    120,
+    56,
+    148,
+    437,
+    184,
+    88,
+    150
+  ],
+  "solve_time_seconds": 0.008
+}

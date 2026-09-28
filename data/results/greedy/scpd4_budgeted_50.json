@@ -1,0 +1,18 @@
+{
+  "instance": "scpd4",
+  "algorithm": "greedy_pure",
+  "mode": "budgeted",
+  "budget_level": "50%",
+  "budget_value": 31,
+  "status": "greedy",
+  "objective": 142,
+  "cost": 31,
+  "selected_packages": [
+    338,
+    225,
+    370,
+    1,
+    180
+  ],
+  "solve_time_seconds": 0.005
+}

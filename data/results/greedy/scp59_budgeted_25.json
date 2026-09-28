@@ -1,0 +1,22 @@
+{
+  "instance": "scp59",
+  "algorithm": "greedy_pure",
+  "mode": "budgeted",
+  "budget_level": "25%",
+  "budget_value": 69,
+  "status": "greedy",
+  "objective": 70,
+  "cost": 69,
+  "selected_packages": [
+    315,
+    506,
+    0,
+    15,
+    86,
+    102,
+    119,
+    16,
+    41
+  ],
+  "solve_time_seconds": 0.002
+}

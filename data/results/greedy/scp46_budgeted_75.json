@@ -1,0 +1,29 @@
+{
+  "instance": "scp46",
+  "algorithm": "greedy_pure",
+  "mode": "budgeted",
+  "budget_level": "75%",
+  "budget_value": 420,
+  "status": "greedy",
+  "objective": 111,
+  "cost": 420,
+  "selected_packages": [
+    62,
+    670,
+    777,
+    707,
+    241,
+    83,
+    171,
+    209,
+    454,
+    12,
+    84,
+    130,
+    307,
+    48,
+    2,
+    1
+  ],
+  "solve_time_seconds": 0.004
+}

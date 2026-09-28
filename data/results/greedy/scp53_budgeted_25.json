@@ -1,0 +1,24 @@
+{
+  "instance": "scp53",
+  "algorithm": "greedy_pure",
+  "mode": "budgeted",
+  "budget_level": "25%",
+  "budget_value": 56,
+  "status": "greedy",
+  "objective": 81,
+  "cost": 56,
+  "selected_packages": [
+    41,
+    448,
+    42,
+    336,
+    43,
+    97,
+    0,
+    1,
+    2,
+    4,
+    6
+  ],
+  "solve_time_seconds": 0.002
+}

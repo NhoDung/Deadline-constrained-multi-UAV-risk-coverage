@@ -1,0 +1,21 @@
+{
+  "instance": "scp510",
+  "algorithm": "greedy_pure",
+  "mode": "budgeted",
+  "budget_level": "50%",
+  "budget_value": 132,
+  "status": "greedy",
+  "objective": 68,
+  "cost": 132,
+  "selected_packages": [
+    36,
+    874,
+    1171,
+    84,
+    106,
+    127,
+    17,
+    1
+  ],
+  "solve_time_seconds": 0.002
+}

@@ -1,0 +1,25 @@
+{
+  "instance": "scp55",
+  "algorithm": "greedy_pure",
+  "mode": "budgeted",
+  "budget_level": "75%",
+  "budget_value": 158,
+  "status": "greedy",
+  "objective": 91,
+  "cost": 158,
+  "selected_packages": [
+    398,
+    471,
+    862,
+    708,
+    0,
+    30,
+    187,
+    248,
+    2,
+    32,
+    75,
+    1
+  ],
+  "solve_time_seconds": 0.005
+}

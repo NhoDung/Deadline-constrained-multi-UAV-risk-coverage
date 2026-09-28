@@ -8,29 +8,17 @@ Chạy: python scripts/solve_ilp.py --instances scpa1,scp61 --time-limit 120
 import argparse
 import json
 import math
+import sys
 import time
 from pathlib import Path
 
 import pulp
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from scripts.opt_reference import OPT_REFERENCE
+
 PROCESSED_DIR = Path(__file__).resolve().parent.parent / "data" / "processed"
 RESULTS_DIR = Path(__file__).resolve().parent.parent / "data" / "results" / "ilp"
-
-# Bảng OPT tham khảo — mục 3 project-brief.md (Ohlsson, Peterson & Söderberg 1999, bảng C2).
-# Chưa tự xác nhận lại bằng ILP; dùng tạm để tính mức ngân sách B cho chế độ budgeted.
-OPT_REFERENCE = {}
-_OPT_TABLE = {
-    "scp4": [429, 512, 516, 494, 512, 560, 430, 492, 641, 514],
-    "scp5": [253, 302, 226, 242, 211, 213, 293, 288, 279, 265],
-    "scp6": [138, 146, 145, 131, 161],
-    "scpa": [253, 252, 232, 234, 236],
-    "scpb": [69, 76, 80, 79, 72],
-    "scpc": [227, 219, 243, 219, 215],
-    "scpd": [60, 66, 72, 62, 61],
-}
-for prefix, values in _OPT_TABLE.items():
-    for idx, value in enumerate(values, start=1):
-        OPT_REFERENCE[f"{prefix}{idx}"] = value
 
 
 def load_instance(name: str) -> dict:

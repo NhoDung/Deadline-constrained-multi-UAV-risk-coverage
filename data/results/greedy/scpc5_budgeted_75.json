@@ -1,0 +1,20 @@
+{
+  "instance": "scpc5",
+  "algorithm": "greedy_pure",
+  "mode": "budgeted",
+  "budget_level": "75%",
+  "budget_value": 161,
+  "status": "greedy",
+  "objective": 103,
+  "cost": 161,
+  "selected_packages": [
+    3120,
+    2759,
+    209,
+    38,
+    0,
+    39,
+    8
+  ],
+  "solve_time_seconds": 0.005
+}
