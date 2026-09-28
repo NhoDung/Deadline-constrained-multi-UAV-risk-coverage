@@ -1,0 +1,32 @@
+{
+  "instance": "scp65",
+  "mode": "budgeted",
+  "budget_level": "25%",
+  "budget_value": 40,
+  "status": "optimal",
+  "objective": 139,
+  "selected_packages": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    12,
+    13,
+    14,
+    17,
+    19,
+    21,
+    24,
+    27,
+    32
+  ],
+  "solve_time_seconds": 0.085,
+  "time_limit_seconds": 600
+}

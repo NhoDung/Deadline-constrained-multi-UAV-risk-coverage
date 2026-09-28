@@ -1,0 +1,27 @@
+{
+  "instance": "scpd5",
+  "mode": "budgeted",
+  "budget_level": "25%",
+  "budget_value": 15,
+  "status": "optimal",
+  "objective": 268,
+  "selected_packages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    9,
+    10,
+    11,
+    13,
+    14,
+    15,
+    18,
+    20,
+    23,
+    28
+  ],
+  "solve_time_seconds": 2.903,
+  "time_limit_seconds": 600
+}
