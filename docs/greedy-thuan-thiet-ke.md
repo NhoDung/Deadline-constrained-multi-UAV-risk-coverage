@@ -34,7 +34,7 @@ Ngân sách cao hơn (45) lại cho kết quả tệ hơn ngân sách thấp hơ
 
 - Mỗi bước: quét tối đa `n` gói chưa chọn, mỗi gói tính `|sets[j] - covered|` tốn tối đa `O(|sets[j]|)`.
 - Số bước tối đa: `n` (chọn hết mọi gói) nhưng thực tế dừng sớm khi ngân sách cạn.
-- Tổng: `O(k · n · s̄)` với `k` = số bước thực tế, `s̄` = kích thước trung bình một gói — trong thực nghiệm trên bộ dữ liệu này (n ≤ 4000, m ≤ 400) chạy dưới 10ms/instance/mức ngân sách (xem log chạy thực tế).
+- Tổng: `O(k · n · s̄)` với `k` = số bước thực tế, `s̄` = kích thước trung bình một gói — trong thực nghiệm trên bộ dữ liệu này (n ≤ 4000, m ≤ 400) chạy dưới 15ms/instance/mức ngân sách (lần chạy chậm nhất đo được: 14ms; xem trường `solve_time_seconds` trong `data/results/greedy/`).
 - Có thể tối ưu bằng lazy evaluation (CELF, thuật toán #5 trong roadmap) nếu cần chạy trên instance lớn hơn nhiều — không cần thiết ở quy mô hiện tại.
 
 ## 4. Cấu trúc file kết quả
@@ -80,3 +80,7 @@ Bảng `OPT_REFERENCE` (trước đây hard-code trong `scripts/solve_ilp.py`) �
 `tests/test_opt_reference.py` khoá lại vài giá trị tham chiếu sau khi tách bảng ra module riêng, đảm bảo refactor không làm lệch số liệu.
 
 Chạy: `python -m pytest tests/`
+
+## 8. Kiểm tra kết quả bằng validator
+
+`python scripts/validate_solution.py --results-dir data/results/greedy` tự tính lại chi phí và số ô phủ của 135 file kết quả greedy, và kiểm tra `cost ≤ B`, `budget_value` khớp mức % × OPT, Hệ quả 1. Xem `docs/ilp-solver-thiet-ke.md` mục 6.
