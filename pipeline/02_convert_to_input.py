@@ -3,7 +3,7 @@ cho thuật toán (chiều gói→ô, 0-indexed), lưu dưới dạng JSON.
 
 Xem giải thích chi tiết ở docs/mo-hinh-du-lieu.md.
 
-Chạy: python scripts/convert_to_input.py
+Chạy: python pipeline/02_convert_to_input.py
 """
 
 import json

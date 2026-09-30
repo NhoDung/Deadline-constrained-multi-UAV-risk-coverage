@@ -1,4 +1,4 @@
-from scripts.opt_reference import OPT_REFERENCE
+from pipeline.opt_reference import OPT_REFERENCE
 
 
 def test_scpa1_matches_known_opt_value():

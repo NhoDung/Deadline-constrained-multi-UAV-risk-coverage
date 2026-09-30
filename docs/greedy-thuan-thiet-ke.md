@@ -1,6 +1,6 @@
 # Thiết kế: Greedy thuần (baseline)
 
-> Mục tiêu: script `baseline/greedy_pure.py` — thuật toán #2 trong mục 7 project-brief.md ("Greedy thuần — mỗi bước chọn gói phủ thêm được nhiều ô mới nhất"). Dùng làm baseline nhanh, so sánh với đáp án chính xác từ `scripts/solve_ilp.py`.
+> Mục tiêu: script `pipeline/04_greedy_pure.py` — thuật toán #2 trong mục 7 project-brief.md ("Greedy thuần — mỗi bước chọn gói phủ thêm được nhiều ô mới nhất"). Dùng làm baseline nhanh, so sánh với đáp án chính xác từ `pipeline/03_solve_ilp.py`.
 
 ## 1. Bài toán: Budgeted Max Coverage (chỉ chế độ budgeted)
 
@@ -57,7 +57,7 @@ Ngân sách cao hơn (45) lại cho kết quả tệ hơn ngân sách thấp hơ
 ## 5. Tham số dòng lệnh
 
 ```
-python baseline/greedy_pure.py --instances scpa1,scp61 --budget-levels 75,50,25
+python pipeline/04_greedy_pure.py --instances scpa1,scp61 --budget-levels 75,50,25
 ```
 
 - `--instances`: mặc định tất cả 45 instance trong `data/processed/`.
@@ -66,7 +66,7 @@ python baseline/greedy_pure.py --instances scpa1,scp61 --budget-levels 75,50,25
 
 ## 6. Refactor liên quan
 
-Bảng `OPT_REFERENCE` (trước đây hard-code trong `scripts/solve_ilp.py`) đã được tách ra `scripts/opt_reference.py` để dùng chung giữa ILP và mọi thuật toán baseline/heuristic khác — tránh lặp lại bảng số ở nhiều nơi và tránh lệch số liệu khi có người sửa một chỗ mà quên chỗ kia.
+Bảng `OPT_REFERENCE` (trước đây hard-code trong `pipeline/03_solve_ilp.py`) đã được tách ra `pipeline/opt_reference.py` để dùng chung giữa ILP và mọi thuật toán baseline/heuristic khác — tránh lặp lại bảng số ở nhiều nơi và tránh lệch số liệu khi có người sửa một chỗ mà quên chỗ kia.
 
 ## 7. Kiểm thử
 
@@ -83,4 +83,18 @@ Chạy: `python -m pytest tests/`
 
 ## 8. Kiểm tra kết quả bằng validator
 
-`python scripts/validate_solution.py --results-dir data/results/greedy` tự tính lại chi phí và số ô phủ của 135 file kết quả greedy, và kiểm tra `cost ≤ B`, `budget_value` khớp mức % × OPT, Hệ quả 1. Xem `docs/ilp-solver-thiet-ke.md` mục 6.
+`python pipeline/05_validate_solution.py --results-dir data/results/greedy` tự tính lại chi phí và số ô phủ của 135 file kết quả greedy, và kiểm tra `cost ≤ B`, `budget_value` khớp mức % × OPT, Hệ quả 1. Xem `docs/ilp-solver-thiet-ke.md` mục 6.
+
+## 9. Kết quả so với ILP tối ưu (45 instance)
+
+Tỉ lệ = số ô phủ của greedy / số ô phủ tối ưu của ILP (đều `optimal`), lấy trung bình trên 45 instance:
+
+| Mức ngân sách | Độ phủ TB của greedy | Độ phủ TB của ILP tối ưu | Tỉ lệ greedy/ILP TB (thấp nhất – cao nhất) |
+|---|---|---|---|
+| 75% OPT | 41.7% | 96.0% | 0.435 (0.093 – 0.707) |
+| 50% OPT | 35.9% | 87.5% | 0.410 (0.191 – 0.678) |
+| 25% OPT | 28.3% | 69.3% | 0.408 (0.201 – 0.669) |
+
+Thời gian chạy của greedy tối đa 14ms/lần; ILP mỗi lần giải tối đa ~14 giây.
+
+**Lưu ý khi đọc kết quả:** greedy thuần yếu vì bỏ qua chi phí, nên hay chọn một gói đắt phủ nhiều ô rồi cạn ngân sách. Hệ quả là kết quả **không đơn điệu theo ngân sách** ở 21/45 instance (ngân sách cao hơn lại phủ ít hơn), ví dụ `scpd5`: B=45 → 36 ô, B=30 → 144 ô, B=15 → 148 ô. Đây là điểm cần nêu trong phần Discussion của báo cáo, và là lý do cần các thuật toán tốt hơn (greedy theo tỉ lệ, Khuller–Moss–Naor, ...). Không có bảo đảm xấp xỉ nào cho thuật toán này (brief mục 6).

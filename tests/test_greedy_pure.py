@@ -1,4 +1,4 @@
-from baseline.greedy_pure import greedy_budgeted
+from pipeline.greedy_pure import greedy_budgeted
 
 
 def test_picks_package_covering_most_new_cells_within_budget():

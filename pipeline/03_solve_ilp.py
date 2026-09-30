@@ -2,7 +2,7 @@
 
 Xem thiết kế đầy đủ (công thức toán, sơ đồ) ở docs/ilp-solver-thiet-ke.md.
 
-Chạy: python scripts/solve_ilp.py --instances scpa1,scp61 --time-limit 120
+Chạy: python pipeline/03_solve_ilp.py --instances scpa1,scp61 --time-limit 120
 """
 
 import argparse
@@ -15,7 +15,7 @@ from pathlib import Path
 import pulp
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from scripts.opt_reference import OPT_REFERENCE
+from pipeline.opt_reference import OPT_REFERENCE
 
 PROCESSED_DIR = Path(__file__).resolve().parent.parent / "data" / "processed"
 RESULTS_DIR = Path(__file__).resolve().parent.parent / "data" / "results" / "ilp"

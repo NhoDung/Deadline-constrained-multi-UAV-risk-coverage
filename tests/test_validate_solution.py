@@ -1,4 +1,4 @@
-from scripts.validate_solution import validate_solution, validate_results_dir
+from pipeline.validate_solution import validate_solution, validate_results_dir
 
 # 4 ô, 3 gói. OPT thật của instance này là 3 (gói 0 + gói 1 phủ hết 4 ô).
 INSTANCE = {

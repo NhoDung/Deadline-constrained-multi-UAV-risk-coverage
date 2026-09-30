@@ -1,6 +1,6 @@
 """Tải 45 file benchmark OR-Library (Set Covering) dùng cho Pha 1.
 
-Chạy: python scripts/download_orlib.py
+Chạy: python pipeline/01_download_orlib.py
 """
 
 import urllib.request

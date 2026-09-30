@@ -1,6 +1,6 @@
 # Thiết kế: ILP solver chính xác (PuLP)
 
-> Mục tiêu: script `scripts/solve_ilp.py`, dùng làm (1) đáp án tối ưu tham chiếu cho mọi mức ngân sách, và (2) công cụ tự tái lập bảng OPT (mục 3 project-brief.md) để xác nhận dữ liệu + pipeline đọc file không có lỗi.
+> Mục tiêu: script `pipeline/03_solve_ilp.py`, dùng làm (1) đáp án tối ưu tham chiếu cho mọi mức ngân sách, và (2) công cụ tự tái lập bảng OPT (mục 3 project-brief.md) để xác nhận dữ liệu + pipeline đọc file không có lỗi.
 
 ## 1. Hai bài toán, hai công thức ILP khác nhau
 
@@ -70,7 +70,7 @@ Format này chính là "file lời giải" đã bàn trước đó — validator
 ## 4. Tham số dòng lệnh
 
 ```
-python scripts/solve_ilp.py --instances scpa1,scp61 --modes setcover,budgeted --time-limit 120
+python pipeline/03_solve_ilp.py --instances scpa1,scp61 --modes setcover,budgeted --time-limit 120
 ```
 
 - `--instances`: danh sách tên instance (mặc định: tất cả trong `data/processed/`).
@@ -84,14 +84,14 @@ python scripts/solve_ilp.py --instances scpa1,scp61 --modes setcover,budgeted --
 Đã chạy đủ 45 instance × (1 setcover + 3 mức budgeted) = **180 lần giải**, `time_limit = 600s`, kết quả nằm ở `data/results/ilp/`.
 
 - **Tất cả 180 lần đều `status = "optimal"`** — không có lần nào hết giờ, nên không có kết quả `best-known` nào; các con số ở B = 75/50/25% là tối ưu thật sự, không phải cận.
-- **Tái lập OPT:** cả 45 nghiệm setcover khớp đúng bảng OPT tham khảo (brief mục 3), và mỗi nghiệm phủ đủ 100% ô. Việc này đồng thời xác nhận code đọc/chuyển đổi dữ liệu (`scripts/convert_to_input.py`) không có lỗi.
+- **Tái lập OPT:** cả 45 nghiệm setcover khớp đúng bảng OPT tham khảo (brief mục 3), và mỗi nghiệm phủ đủ 100% ô. Việc này đồng thời xác nhận code đọc/chuyển đổi dữ liệu (`pipeline/02_convert_to_input.py`) không có lỗi.
 - **Hệ quả 1 (brief mục 5):** mọi nghiệm budgeted ở B < OPT đều phủ < m ô; chi phí luôn ≤ B.
 - **Thời gian:** mỗi lần giải tối đa ~14 giây (setcover tối đa ~10 giây, tổng 45 lần setcover ~54 giây), thấp hơn nhiều so với dự tính "hàng chục giờ" ban đầu.
-- **Kiểm tra lại bằng validator:** `python scripts/validate_solution.py` (xem mục 6) tự tính lại chi phí/độ phủ từ `selected_packages` của cả 180 file, không phụ thuộc số liệu solver tự báo cáo.
+- **Kiểm tra lại bằng validator:** `python pipeline/05_validate_solution.py` (xem mục 6) tự tính lại chi phí/độ phủ từ `selected_packages` của cả 180 file, không phụ thuộc số liệu solver tự báo cáo.
 
 ## 6. Validator chung
 
-`scripts/validate_solution.py` đọc mọi file kết quả (ILP, greedy và các heuristic sau này — miễn đúng format mục 3) và tự tính lại từ `data/processed/<instance>.json`. Nó báo lỗi khi:
+`pipeline/05_validate_solution.py` đọc mọi file kết quả (ILP, greedy và các heuristic sau này — miễn đúng format mục 3) và tự tính lại từ `data/processed/<instance>.json`. Nó báo lỗi khi:
 
 - chỉ số gói ngoài phạm vi `[0, n-1]`, hoặc có gói chọn trùng;
 - `cost` (nếu file có trường này) hoặc `objective` không khớp số tính lại;
@@ -100,8 +100,8 @@ python scripts/solve_ilp.py --instances scpa1,scp61 --modes setcover,budgeted --
 - với setcover: chưa phủ hết ô, hoặc chi phí nhỏ hơn OPT tham khảo.
 
 ```
-python scripts/validate_solution.py                              # quét đệ quy toàn bộ data/results/
-python scripts/validate_solution.py --results-dir data/results/greedy
+python pipeline/05_validate_solution.py                              # quét đệ quy toàn bộ data/results/
+python pipeline/05_validate_solution.py --results-dir data/results/greedy
 ```
 
 Thoát với mã 1 nếu có lỗi (dùng được trong CI hoặc trước khi nộp kết quả). Test: `tests/test_validate_solution.py`.

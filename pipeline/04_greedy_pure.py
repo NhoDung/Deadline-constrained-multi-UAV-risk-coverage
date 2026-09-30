@@ -2,7 +2,7 @@
 
 Xem thiết kế đầy đủ ở docs/greedy-thuan-thiet-ke.md.
 
-Chạy: python baseline/greedy_pure.py --instances scpa1,scp61 --budget-levels 75,50,25
+Chạy: python pipeline/04_greedy_pure.py --instances scpa1,scp61 --budget-levels 75,50,25
 """
 
 import argparse
@@ -13,7 +13,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from scripts.opt_reference import OPT_REFERENCE
+from pipeline.opt_reference import OPT_REFERENCE
 
 PROCESSED_DIR = Path(__file__).resolve().parent.parent / "data" / "processed"
 RESULTS_DIR = Path(__file__).resolve().parent.parent / "data" / "results" / "greedy"

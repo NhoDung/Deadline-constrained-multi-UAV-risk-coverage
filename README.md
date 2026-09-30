@@ -8,17 +8,15 @@ Project nghiên cứu bài toán **Maximum Risk Coverage**, thuộc lớp bài t
 
 | Thư mục / file | Nội dung |
 |---|---|
+| `pipeline/` | Các bước chạy, đánh số theo thứ tự: `01_download_orlib`, `02_convert_to_input`, `03_solve_ilp`, `04_greedy_pure`, `05_validate_solution`; `opt_reference.py` là bảng OPT dùng chung |
 | `data/raw/OR-Library/` | 45 file Set Covering gốc (bộ 4, 5, 6, A–D) |
 | `data/processed/` | JSON đã chuyển sang chiều gói→ô, 0-indexed (`m, n, costs, sets`) |
 | `data/results/ilp/` | 180 kết quả ILP (45 instance × setcover + budgeted 75/50/25%), tất cả `optimal` |
 | `data/results/greedy/` | 135 kết quả greedy thuần (45 instance × 75/50/25%) |
-| `scripts/` | `download_orlib.py`, `convert_to_input.py`, `solve_ilp.py`, `opt_reference.py` (bảng OPT), `validate_solution.py` (validator) |
-| `baseline/` | Thuật toán baseline (hiện có greedy thuần) — xem `baseline/README.md` |
+| `docs/` | `huong-dan-chay.md` (thứ tự chạy, input, output của từng script), cùng các doc mô hình dữ liệu, thiết kế ILP, thiết kế greedy |
 | `proposed-algorithm/` | Thuật toán đề xuất cho Pha 2 (chưa bắt đầu) |
-| `docs/` | Mô hình dữ liệu, thiết kế ILP, thiết kế greedy |
 | `report/` | Phân công công việc |
 | `tests/` | Test bằng pytest |
-| `project-brief.md` | Tài liệu tham chiếu tổng hợp: đề bài, dữ liệu, quy ước, kế hoạch |
 
 ## Cài đặt và chạy
 
@@ -26,17 +24,19 @@ Project nghiên cứu bài toán **Maximum Risk Coverage**, thuộc lớp bài t
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt        # gồm pytest và PuLP
 
-python scripts/download_orlib.py           # tải 45 file raw (đã có sẵn trong repo)
-python scripts/convert_to_input.py         # raw -> data/processed/
-python scripts/solve_ilp.py --time-limit 600          # ILP cho toàn bộ 45 instance
-python baseline/greedy_pure.py                        # greedy thuần, 45 instance x 75/50/25%
-python scripts/validate_solution.py                   # kiểm tra mọi kết quả trong data/results/
+python pipeline/01_download_orlib.py       # tải 45 file raw (đã có sẵn trong repo)
+python pipeline/02_convert_to_input.py     # raw -> data/processed/
+python pipeline/03_solve_ilp.py --time-limit 600    # ILP cho toàn bộ 45 instance
+python pipeline/04_greedy_pure.py          # greedy thuần, 45 instance x 75/50/25%
+python pipeline/05_validate_solution.py    # kiểm tra mọi kết quả trong data/results/
 python -m pytest tests/
 ```
 
+Input, output và cách đọc kết quả của từng bước: [`docs/huong-dan-chay.md`](docs/huong-dan-chay.md).
+
 ## Validator
 
-`scripts/validate_solution.py` là script kiểm tra chung cho **mọi** thuật toán: nó bỏ qua số liệu thuật toán tự báo cáo, đọc `selected_packages` rồi tự tính lại chi phí và số ô phủ từ `data/processed/`. Nó báo lỗi (thoát mã 1) nếu chi phí vượt ngân sách `B`, `budget_value` không khớp `floor(mức% × OPT)`, số liệu khai báo lệch số tính lại, gói ngoài phạm vi/trùng, hoặc phủ 100% ô khi `B < OPT` (Hệ quả 1). **Hãy chạy validator trước khi nộp hoặc báo cáo kết quả của bất kỳ thuật toán mới nào.** Chi tiết: `docs/ilp-solver-thiet-ke.md` mục 6.
+`pipeline/05_validate_solution.py` là script kiểm tra chung cho **mọi** thuật toán: nó bỏ qua số liệu thuật toán tự báo cáo, đọc `selected_packages` rồi tự tính lại chi phí và số ô phủ từ `data/processed/`. Nó báo lỗi (thoát mã 1) nếu chi phí vượt ngân sách `B`, `budget_value` không khớp `floor(mức% × OPT)`, số liệu khai báo lệch số tính lại, gói ngoài phạm vi/trùng, hoặc phủ 100% ô khi `B < OPT` (Hệ quả 1). **Hãy chạy validator trước khi nộp hoặc báo cáo kết quả của bất kỳ thuật toán mới nào.** Chi tiết: `docs/ilp-solver-thiet-ke.md` mục 6.
 
 ## Trạng thái hiện tại (Pha 1)
 

@@ -5,8 +5,8 @@ trong docs/ilp-solver-thiet-ke.md mục 3). Không tin số liệu do thuật to
 báo cáo — chỉ đọc `selected_packages` rồi tính lại từ instance gốc.
 
 Chạy (kiểm tra toàn bộ data/results/):
-    python scripts/validate_solution.py
-    python scripts/validate_solution.py --results-dir data/results/greedy
+    python pipeline/05_validate_solution.py
+    python pipeline/05_validate_solution.py --results-dir data/results/greedy
 Thoát với mã 1 nếu có bất kỳ lỗi nào.
 """
 
@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from scripts.opt_reference import OPT_REFERENCE
+from pipeline.opt_reference import OPT_REFERENCE
 
 ROOT = Path(__file__).resolve().parent.parent
 PROCESSED_DIR = ROOT / "data" / "processed"
