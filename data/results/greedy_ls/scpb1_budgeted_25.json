@@ -1,0 +1,34 @@
+{
+  "instance": "scpb1",
+  "algorithm": "greedy_ls",
+  "mode": "budgeted",
+  "budget_level": "25%",
+  "budget_value": 17,
+  "status": "heuristic",
+  "objective": 210,
+  "covered_weight": 210,
+  "cost": 17,
+  "selected_packages": [
+    6,
+    0,
+    4,
+    5,
+    2,
+    7,
+    3,
+    20,
+    8,
+    10,
+    14,
+    21,
+    9,
+    15,
+    17,
+    30
+  ],
+  "solve_time_seconds": 0.014,
+  "params": {
+    "seeds": 20,
+    "ls_rounds": 50
+  }
+}

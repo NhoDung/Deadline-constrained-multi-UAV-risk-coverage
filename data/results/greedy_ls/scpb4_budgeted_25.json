@@ -1,0 +1,36 @@
+{
+  "instance": "scpb4",
+  "algorithm": "greedy_ls",
+  "mode": "budgeted",
+  "budget_level": "25%",
+  "budget_value": 19,
+  "status": "heuristic",
+  "objective": 209,
+  "covered_weight": 209,
+  "cost": 19,
+  "selected_packages": [
+    10,
+    0,
+    1,
+    3,
+    5,
+    9,
+    11,
+    7,
+    14,
+    19,
+    16,
+    17,
+    21,
+    6,
+    15,
+    8,
+    36,
+    22
+  ],
+  "solve_time_seconds": 0.015,
+  "params": {
+    "seeds": 20,
+    "ls_rounds": 50
+  }
+}
