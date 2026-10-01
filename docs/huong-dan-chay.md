@@ -4,7 +4,8 @@ Mọi lệnh chạy **từ thư mục gốc của repo**. Các script trong `pip
 
 ```
 01 download → 02 convert → 03 ILP ─┐
-                          └ 04 greedy ─┴→ 05 validate
+                          ├ 04 greedy ─┤
+                          └ 06 greedy_ls ┴→ 05 validate
 ```
 
 Cài đặt một lần:
@@ -24,6 +25,7 @@ Dữ liệu raw, processed và kết quả đều đã có sẵn trong repo, nê
 | 02 | `pipeline/02_convert_to_input.py` | `data/raw/OR-Library/*.txt` | `data/processed/*.json` (45 file) |
 | 03 | `pipeline/03_solve_ilp.py` | `data/processed/*.json` | `data/results/ilp/*.json` (180 file) |
 | 04 | `pipeline/04_greedy_pure.py` | `data/processed/*.json` | `data/results/greedy/*.json` (135 file) |
+| 06 | `pipeline/06_greedy_ls.py` | `data/processed/*.json` | `data/results/greedy_ls/*.json` (135 file) |
 | 05 | `pipeline/05_validate_solution.py` | `data/processed/` + `data/results/**` | báo cáo trên terminal, mã thoát 0/1 |
 
 `pipeline/opt_reference.py` là bảng OPT dùng chung (giá trị tối ưu set cover của 45 instance), do các bước 03, 04, 05 import. Không chạy trực tiếp.
@@ -101,6 +103,19 @@ python pipeline/04_greedy_pure.py --instances scpa1,scp61 --budget-levels 75,50,
 
 Thiết kế và kết quả so với ILP: `docs/greedy-thuan-thiet-ke.md`.
 
+## Bước 06: Seeded Lazy Ratio Greedy + Local Search
+
+```bash
+python pipeline/06_greedy_ls.py                                         # 45 instance x 75/50/25%
+python pipeline/06_greedy_ls.py --instances scpa1 --seeds 100 --ls-rounds 50
+```
+
+- **Input:** `data/processed/*.json` (có thể có thêm trường `weights` cho trọng số rủi ro), bảng OPT.
+- **Output:** `data/results/greedy_ls/<instance>_budgeted_<75|50|25>.json`. Các trường giống greedy thuần, thêm `covered_weight` và `params`; `status` là `"heuristic"`.
+- **Thuật toán:** greedy theo tỉ lệ ô mới/chi phí, kết hợp gói đơn tốt nhất, khởi tạo từ nhiều gói seed, rồi local search drop-and-refill. Deterministic.
+
+Thiết kế, cận xấp xỉ và kết quả: `docs/greedy-ls-thiet-ke.md`.
+
 ## Bước 05: kiểm tra kết quả
 
 ```bash
@@ -125,7 +140,7 @@ python -m pytest tests/
 
 ## Thêm thuật toán mới
 
-1. Đặt code trong `pipeline/` (đánh số tiếp theo, ví dụ `06_...py`) hoặc `proposed-algorithm/`, đọc instance từ `data/processed/<tên>.json`.
+1. Đặt code trong `pipeline/` (đánh số tiếp theo, ví dụ `07_...py`) hoặc `proposed-algorithm/`, đọc instance từ `data/processed/<tên>.json`.
 2. Dùng `pipeline/opt_reference.py` để tính `B = floor(mức% × OPT)`.
 3. Ghi kết quả JSON cùng format vào `data/results/<tên thuật toán>/`, với các trường `instance, algorithm, mode, budget_level, budget_value, status, objective, cost, selected_packages, solve_time_seconds`. Nếu có yếu tố ngẫu nhiên, chạy 20–30 seed và ghi thêm `seed`.
 4. Viết test trước (TDD), rồi chạy bước 05 để chắc kết quả hợp lệ. Không chỉnh heuristic cho khớp đáp án ILP.
