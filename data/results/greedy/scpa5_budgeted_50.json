@@ -1,0 +1,17 @@
+{
+  "instance": "scpa5",
+  "algorithm": "greedy_pure",
+  "mode": "budgeted",
+  "budget_level": "50%",
+  "budget_value": 118,
+  "status": "greedy",
+  "objective": 60,
+  "cost": 118,
+  "selected_packages": [
+    1911,
+    86,
+    1228,
+    245
+  ],
+  "solve_time_seconds": 0.003
+}
