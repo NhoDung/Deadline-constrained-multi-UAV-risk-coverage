@@ -12,6 +12,8 @@ ALIASES = {
     "pipeline.greedy_pure": "04_greedy_pure.py",
     "pipeline.validate_solution": "05_validate_solution.py",
     "pipeline.greedy_ls": "06_greedy_ls.py",
+    "pipeline.lp_rounding": "07_lp_rounding.py",
+    "pipeline.genetic": "08_genetic.py",
 }
 
 for module_name, file_name in ALIASES.items():
