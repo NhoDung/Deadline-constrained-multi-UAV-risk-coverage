@@ -1,0 +1,33 @@
+{
+  "instance": "scpd4",
+  "algorithm": "greedy_ls",
+  "mode": "budgeted",
+  "budget_level": "25%",
+  "budget_value": 15,
+  "status": "heuristic",
+  "objective": 263,
+  "covered_weight": 263,
+  "cost": 15,
+  "selected_packages": [
+    3,
+    0,
+    2,
+    5,
+    6,
+    10,
+    14,
+    7,
+    29,
+    17,
+    11,
+    23,
+    15,
+    8,
+    22
+  ],
+  "solve_time_seconds": 0.018,
+  "params": {
+    "seeds": 20,
+    "ls_rounds": 50
+  }
+}

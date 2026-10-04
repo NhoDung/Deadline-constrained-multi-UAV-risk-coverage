@@ -8,12 +8,13 @@ Project nghiên cứu bài toán **Maximum Risk Coverage**, thuộc lớp bài t
 
 | Thư mục / file | Nội dung |
 |---|---|
-| `pipeline/` | Các bước chạy, đánh số theo thứ tự: `01_download_orlib`, `02_convert_to_input`, `03_solve_ilp`, `04_greedy_pure`, `05_validate_solution`; `opt_reference.py` là bảng OPT dùng chung |
+| `pipeline/` | Các bước chạy, đánh số theo thứ tự: `01_download_orlib`, `02_convert_to_input`, `03_solve_ilp`, `04_greedy_pure`, `05_validate_solution`, `06_greedy_ls`; `opt_reference.py` là bảng OPT dùng chung |
 | `data/raw/OR-Library/` | 45 file Set Covering gốc (bộ 4, 5, 6, A–D) |
 | `data/processed/` | JSON đã chuyển sang chiều gói→ô, 0-indexed (`m, n, costs, sets`) |
 | `data/results/ilp/` | 180 kết quả ILP (45 instance × setcover + budgeted 75/50/25%), tất cả `optimal` |
 | `data/results/greedy/` | 135 kết quả greedy thuần (45 instance × 75/50/25%) |
-| `docs/` | `huong-dan-chay.md` (thứ tự chạy, input, output của từng script), cùng các doc mô hình dữ liệu, thiết kế ILP, thiết kế greedy |
+| `data/results/greedy_ls/` | 135 kết quả Seeded Lazy Ratio Greedy + Local Search (thuật toán dùng chung cho cả 2 pha) |
+| `docs/` | `huong-dan-chay.md` (thứ tự chạy, input, output của từng script), cùng các doc mô hình dữ liệu, thiết kế ILP, thiết kế greedy, thiết kế greedy_ls |
 | `proposed-algorithm/` | Thuật toán đề xuất cho Pha 2 (chưa bắt đầu) |
 | `report/` | Phân công công việc |
 | `tests/` | Test bằng pytest |
@@ -28,6 +29,7 @@ python pipeline/01_download_orlib.py       # tải 45 file raw (đã có sẵn t
 python pipeline/02_convert_to_input.py     # raw -> data/processed/
 python pipeline/03_solve_ilp.py --time-limit 600    # ILP cho toàn bộ 45 instance
 python pipeline/04_greedy_pure.py          # greedy thuần, 45 instance x 75/50/25%
+python pipeline/06_greedy_ls.py            # ratio greedy + seed + local search
 python pipeline/05_validate_solution.py    # kiểm tra mọi kết quả trong data/results/
 python -m pytest tests/
 ```
@@ -40,5 +42,5 @@ Input, output và cách đọc kết quả của từng bước: [`docs/huong-da
 
 ## Trạng thái hiện tại (Pha 1)
 
-- Xong: dữ liệu, ILP (45/45 khớp bảng OPT), greedy thuần, validator.
+- Xong: dữ liệu, ILP (45/45 khớp bảng OPT), greedy thuần, validator, `greedy_ls` (trung bình 99.4–99.7% so với ILP, mỗi lần chạy ≤ 0.2 giây; xem `docs/greedy-ls-thiet-ke.md`).
 - Chưa xong: các thuật toán còn lại theo `project-brief.md` mục 7, bảng tổng hợp gap và xuất CSV (mục 8), Pha 2 (RescueNet).

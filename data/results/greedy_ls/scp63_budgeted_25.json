@@ -1,0 +1,38 @@
+{
+  "instance": "scp63",
+  "algorithm": "greedy_ls",
+  "mode": "budgeted",
+  "budget_level": "25%",
+  "budget_value": 36,
+  "status": "heuristic",
+  "objective": 146,
+  "covered_weight": 146,
+  "cost": 36,
+  "selected_packages": [
+    7,
+    0,
+    1,
+    2,
+    3,
+    5,
+    9,
+    4,
+    10,
+    12,
+    6,
+    8,
+    19,
+    13,
+    14,
+    26,
+    16,
+    18,
+    25,
+    23
+  ],
+  "solve_time_seconds": 0.007,
+  "params": {
+    "seeds": 20,
+    "ls_rounds": 50
+  }
+}
