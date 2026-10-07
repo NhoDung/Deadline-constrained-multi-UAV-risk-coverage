@@ -52,8 +52,8 @@ Các tình huống spec ngầm đòi hỏi nhưng dễ bị bỏ sót (mỗi dò
 | 0 | Nhánh, phụ thuộc, `.gitignore` | 07/10 | ✅ đã commit |
 | 1 | Risk map từ mask (`rn/risk.py`) | 07/10 | ✅ đã commit |
 | 2 | Chọn ảnh phân tầng (`rn/select.py`) | 07/10 | ✅ đã commit |
-| 3 | Sinh route/instance (`rn/routes.py`) | 08/10 | ✅ (chưa commit) |
-| 4 | Chi phí tham chiếu, ngân sách, CLI chuẩn bị `07` | 08/10 | ⬜ |
+| 3 | Sinh route/instance (`rn/routes.py`) | 08/10 | ✅ đã commit |
+| 4 | Chi phí tham chiếu, ngân sách, CLI chuẩn bị `07` | 08/10 | ✅ (chưa commit) |
 | 5 | ILP có trọng số + per-UAV (`08`) | 08/10 | ⬜ |
 | 6 | Greedy per-UAV: đề xuất + naive (`09`) | 09/10 | ⬜ |
 | 7 | Validator per-UAV (`10`) | 09/10 | ⬜ |
@@ -65,7 +65,8 @@ Các tình huống spec ngầm đòi hỏi nhưng dễ bị bỏ sót (mỗi dò
 - 07/10/2026: audit Pha 1 xong (0 lỗi/450 file), xác nhận dữ liệu RescueNet (validation set 449 ảnh), duyệt spec, viết kế hoạch này.
 - 07/10/2026 (session 1, tiếp): chọn cách thực thi Native. Xong Task 0 (nhánh `phase2-rescuenet`, ghim numpy==2.5.3, pillow==12.3.0, scipy==1.18.1) và Task 1 (`pipeline/rn/risk.py`, 6 test mới, toàn bộ 33 test xanh). Thử trên mask thật 14238: lưới 20x20, 155 ô điểm > 0, 0.14s. Chưa commit gì (chờ người dùng đồng ý). Đã commit Task 0 và 1 (be14bc9, 739d9ca).
 - 07/10/2026: xong Task 2 (`pipeline/rn/select.py`, 4 test, tổng 37 test xanh), đã commit 98a58ed.
-- 07/10/2026: xong Task 3 (`pipeline/rn/routes.py`, 8 test, tổng 45 test xanh), chưa commit. Thử trên mask 14238 (k=4, 300 route/UAV, max 40 ô): m=155, n=755, đủ 155/155 ô phủ được, 0.03s; số route mỗi UAV lệch (271/212/43/229) vì dedupe theo tập ô. Task kế tiếp: Task 4 (CLI `07`, cần chạy `select` trên 449 mask thật).
+- 07/10/2026: xong Task 3 (`pipeline/rn/routes.py`, 8 test, tổng 45 test xanh), chưa commit. Thử trên mask 14238 (k=4, 300 route/UAV, max 40 ô): m=155, n=755, đủ 155/155 ô phủ được, 0.03s; số route mỗi UAV lệch (271/212/43/229) vì dedupe theo tập ô. Đã commit d8c639c.
+- 07/10/2026: xong Task 4 (`rn/budgets.py`, `rn/store.py`, `07_rn_prepare.py`, 4 test, tổng 49 test xanh), chưa commit. Chạy thật: `select` (33s): 449 ảnh, 350 đủ điều kiện (min_cells=60), chọn 30 (10/tầng; tầng low có damage_frac 0–0.0023, mid 0.042–0.090, high 0.098–0.283). `build` (2 phút): 30 instance trong `data/rescuenet/g20_default/instances/` (5.4MB), m=68–304, n=403–1027, R=109–598. Phát hiện: (a) instance 12078 có 1 ô không route nào phủ được (đã được `reference_cost` xử lý); (b) trên 120 cặp (instance, UAV), số UAV có ngân sách < route rẻ nhất của chính nó: 28 ở mức 25%, 9 ở 50%, 3 ở 75%, 1 ở 100% (tức mức 25% khá khắc nghiệt: ~23% UAV không bay được route nào). Task kế tiếp: Task 5 (ILP có trọng số + per-UAV, `08`).
 
 ---
 
