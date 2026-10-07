@@ -94,6 +94,16 @@ def main() -> None:
             w, t, l = win_tie_loss(a, b)
             print(f"{level}%: {w}/{t}/{l}  p = {paired_wilcoxon(a, b):.4g}  (n={len(a)})")
 
+    ablations = sorted({alg for alg, _ in ratios if alg.startswith("abl_")})
+    if ablations:
+        print("\nAblation: proposed đầy đủ so với bản bỏ bớt thành phần (thắng/hòa/thua của proposed, Wilcoxon)")
+        for alg in ablations:
+            for level in sorted({lv for a_, lv in ratios if a_ == alg}):
+                full, part = ratios.get(("proposed", level)), ratios.get((alg, level))
+                if full and part and len(full) == len(part) and len(full) >= 2:
+                    w, t, l = win_tie_loss(full, part)
+                    print(f"{alg} @{level}%: {w}/{t}/{l}  p = {paired_wilcoxon(full, part):.4g}  (n={len(full)})")
+
 
 if __name__ == "__main__":
     main()

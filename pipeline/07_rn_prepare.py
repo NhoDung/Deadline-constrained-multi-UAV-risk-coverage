@@ -60,13 +60,21 @@ def cmd_build(args) -> None:
     selection = json.loads((RN_DIR / "selection.json").read_text())
     out_dir = tag_dir(f"g{args.grid}_{args.table}") / "instances"
     out_dir.mkdir(parents=True, exist_ok=True)
+    skipped = []
     for entry in selection["images"]:
         mask = load_mask(MASK_DIR / f"{entry['id']}_lab.png")
-        instance = build_from_mask(mask, args.grid, args.table, args.k, args.routes_per_uav,
-                                   args.max_cells, seed=int(entry["id"]))
+        try:
+            instance = build_from_mask(mask, args.grid, args.table, args.k, args.routes_per_uav,
+                                       args.max_cells, seed=int(entry["id"]))
+        except ValueError as error:  # ví dụ bảng damage_only: ảnh không có hư hại -> không có ô điểm > 0
+            print(f"[{entry['id']}] BỎ QUA: {error}")
+            skipped.append({"id": entry["id"], "tier": entry["tier"], "reason": str(error)})
+            continue
         instance.update({"image_id": entry["id"], "tier": entry["tier"], "table": args.table})
         (out_dir / f"{entry['id']}.json").write_text(json.dumps(instance))
         print(f"[{entry['id']}] m={instance['m']} n={instance['n']} R={instance['reference_cost']}")
+    (out_dir.parent / "skipped.json").write_text(json.dumps(skipped, indent=1))
+    print(f"đã bỏ qua {len(skipped)}/{len(selection['images'])} ảnh (xem skipped.json)")
 
 
 def main() -> None:

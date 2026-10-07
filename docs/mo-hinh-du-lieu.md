@@ -113,3 +113,27 @@ Bất kể sau này lưu bằng JSON, pickle hay cấu trúc Python thuần, thu
 - **Đảo chiều bắt buộc**: raw là ô→gói, thuật toán cần gói→ô.
 - **1-indexed trong file**, cẩn thận khi chuyển sang mảng 0-indexed trong code.
 - `scp410.txt` và `scp510.txt` từng bị lệch vị trí khi tải (đã tải xong và nằm trong `data/raw/OR-Library/`, không ảnh hưởng bước parse này).
+
+## 8. Pha 2: định dạng instance RescueNet (multi-UAV)
+
+File `data/rescuenet/<tag>/instances/<id>.json`. Cùng tinh thần định dạng Pha 1 (gói → ô, 0-indexed), thêm trọng số ô và chủ sở hữu route:
+
+| Trường | Ý nghĩa |
+|---|---|
+| `m` | số ô có điểm rủi ro > 0 (ô điểm 0 bị loại khỏi universe) |
+| `n` | số route (gói) của cả K UAV |
+| `weights[i]` | điểm rủi ro của ô `i` (trung bình điểm pixel trong ô) |
+| `costs[j]`, `sets[j]` | chi phí và danh sách ô mà route `j` phủ (như Pha 1) |
+| `route_uav[j]` | UAV sở hữu route `j`; chi phí route `j` tính vào pin của UAV này |
+| `paths[j]` | đường đi `[hàng, cột]` trên lưới (chỉ để trực quan hóa/kiểm tra, thuật toán không dùng) |
+| `uav_starts`, `uav_share` | ô xuất phát của từng UAV; tỉ lệ chia pin `share_u` (tổng = 1) |
+| `cell_rc` | tọa độ lưới `[hàng, cột]` của từng ô trong universe |
+| `grid`, `table`, `image_id`, `tier` | lưới, bảng điểm, mã ảnh RescueNet, tầng hư hại |
+| `reference_cost` | `R` = chi phí nhỏ nhất để phủ mọi ô phủ được (ILP set cover, bỏ qua phân chia UAV) |
+
+Ngân sách UAV `u` ở mức `L%`: `B_u = floor(L × R × share_u / 100)` (`pipeline/rn/budgets.py`). Mục tiêu là **tổng điểm rủi ro** ô được phủ (mỗi ô tính một lần), nên trường `objective` trong kết quả Pha 2 là số thực này, khác Pha 1 (số ô). Mỗi UAV chọn nhiều route miễn tổng chi phí ≤ `B_u`.
+
+Trường kết quả Pha 2 (`data/rescuenet/<tag>/results/<thuật toán>/<id>_<mức>.json`): `instance, algorithm, mode ("budgeted_uav"), budget_level (số nguyên), budget_values (list B_u), status, objective, covered_cells, cost_per_uav, selected_packages, solve_time_seconds` (+ `time_limit_seconds` cho ILP, `params` cho heuristic).
+
+**Lưu ý đã biết:** (a) vài instance có ô không route nào phủ được (ví dụ ảnh 12078); (b) ở mức ngân sách thấp, một số UAV có pin nhỏ hơn route rẻ nhất của chính nó và không bay được route nào; (c) `reference_cost` dùng CBC với giới hạn 120 giây, nếu hết giờ thì `R` có thể chỉ là cận trên của chi phí phủ hết (chỉ ảnh hưởng thang ngân sách, dùng chung cho mọi thuật toán).
+

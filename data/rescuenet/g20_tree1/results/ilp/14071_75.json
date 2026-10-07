@@ -1,0 +1,37 @@
+{
+  "instance": "14071",
+  "algorithm": "ilp_uav",
+  "mode": "budgeted_uav",
+  "budget_level": 75,
+  "budget_values": [
+    97,
+    95,
+    85,
+    109
+  ],
+  "status": "best-known",
+  "objective": 184.6867,
+  "covered_cells": 226,
+  "cost_per_uav": [
+    91,
+    90,
+    66,
+    108
+  ],
+  "selected_packages": [
+    130,
+    162,
+    226,
+    378,
+    451,
+    491,
+    518,
+    545,
+    672,
+    738,
+    749,
+    776
+  ],
+  "solve_time_seconds": 120.069,
+  "time_limit_seconds": 120
+}
