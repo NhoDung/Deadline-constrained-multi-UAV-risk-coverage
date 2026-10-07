@@ -51,8 +51,8 @@ Các tình huống spec ngầm đòi hỏi nhưng dễ bị bỏ sót (mỗi dò
 |---|---|---|---|
 | 0 | Nhánh, phụ thuộc, `.gitignore` | 07/10 | ✅ đã commit |
 | 1 | Risk map từ mask (`rn/risk.py`) | 07/10 | ✅ đã commit |
-| 2 | Chọn ảnh phân tầng (`rn/select.py`) | 07/10 | ✅ (chưa commit) |
-| 3 | Sinh route/instance (`rn/routes.py`) | 08/10 | ⬜ |
+| 2 | Chọn ảnh phân tầng (`rn/select.py`) | 07/10 | ✅ đã commit |
+| 3 | Sinh route/instance (`rn/routes.py`) | 08/10 | ✅ (chưa commit) |
 | 4 | Chi phí tham chiếu, ngân sách, CLI chuẩn bị `07` | 08/10 | ⬜ |
 | 5 | ILP có trọng số + per-UAV (`08`) | 08/10 | ⬜ |
 | 6 | Greedy per-UAV: đề xuất + naive (`09`) | 09/10 | ⬜ |
@@ -64,7 +64,8 @@ Các tình huống spec ngầm đòi hỏi nhưng dễ bị bỏ sót (mỗi dò
 
 - 07/10/2026: audit Pha 1 xong (0 lỗi/450 file), xác nhận dữ liệu RescueNet (validation set 449 ảnh), duyệt spec, viết kế hoạch này.
 - 07/10/2026 (session 1, tiếp): chọn cách thực thi Native. Xong Task 0 (nhánh `phase2-rescuenet`, ghim numpy==2.5.3, pillow==12.3.0, scipy==1.18.1) và Task 1 (`pipeline/rn/risk.py`, 6 test mới, toàn bộ 33 test xanh). Thử trên mask thật 14238: lưới 20x20, 155 ô điểm > 0, 0.14s. Chưa commit gì (chờ người dùng đồng ý). Đã commit Task 0 và 1 (be14bc9, 739d9ca).
-- 07/10/2026: xong Task 2 (`pipeline/rn/select.py`, 4 test, tổng 37 test xanh), chưa commit. Task kế tiếp: Task 3.
+- 07/10/2026: xong Task 2 (`pipeline/rn/select.py`, 4 test, tổng 37 test xanh), đã commit 98a58ed.
+- 07/10/2026: xong Task 3 (`pipeline/rn/routes.py`, 8 test, tổng 45 test xanh), chưa commit. Thử trên mask 14238 (k=4, 300 route/UAV, max 40 ô): m=155, n=755, đủ 155/155 ô phủ được, 0.03s; số route mỗi UAV lệch (271/212/43/229) vì dedupe theo tập ô. Task kế tiếp: Task 4 (CLI `07`, cần chạy `select` trên 449 mask thật).
 
 ---
 
