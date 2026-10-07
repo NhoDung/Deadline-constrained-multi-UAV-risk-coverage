@@ -55,7 +55,7 @@ Tỉ lệ trung bình so với ILP (n = 30):
 | `abl_ratio_only` | 18/12/0, p=1.964e-04 | 26/4/0, p=8.298e-06 | 30/0/0, p=1.863e-09 | 30/0/0, p=1.863e-09 |
 
 **Diễn giải (từ các số trên):**
-- Mỗi thành phần đều đóng góp: `proposed` thắng hoặc hòa mọi bản bỏ bớt ở mọi mức (chỉ `abl_no_seed` thua 2 ca ở mức 75% và 100%).
+- Mỗi thành phần đều đóng góp: `proposed` thắng hoặc hòa mọi bản bỏ bớt ở mọi mức (trừ 2 ca ở mỗi mức 75% và 100% mà bản bỏ seed lại tốt hơn).
 - Bỏ **seed** làm mất nhiều hơn bỏ **local search** (ở 50%: 0.9330 so với 0.9632, nghĩa là đầy đủ 0.9744 hơn lần lượt 4.1 và 1.1 điểm phần trăm).
 - Chỉ riêng việc xét pin theo từng UAV lúc chọn (`abl_ratio_only`) hơn `naive` ở cả 4 mức (0.9631 vs 0.9382, 0.9150 vs 0.8976, 0.9147 vs 0.9085, 0.9492 vs 0.9218), nhưng chênh lệch nhỏ ở mức 75% (0.6 điểm). **Phần lớn cải thiện của `proposed` so với `naive` đến từ seed và local search**, không chỉ từ việc xét ngân sách riêng. `naive` cũng dùng seed và local search, nhưng ở pha ngân sách chung.
 
