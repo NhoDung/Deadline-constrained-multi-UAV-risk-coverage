@@ -131,6 +131,14 @@ Bảng đề xuất (khác proposal ở chỗ **Tree = 0**):
 
 **Rủi ro nói trước:** trên OR-Library greedy_ls đã đạt khoảng 99% so với ILP, nên trên RescueNet gap cũng có thể chỉ 1–3%. Khi đó đóng góp là mô hình per-UAV và kết quả trung thực "gần tối ưu, nhanh hơn ILP X lần", **không hứa trước** mức cải thiện.
 
+### Giao thức và giới hạn của ILP (ghi nhận 07/10/2026)
+
+- ILP giải bằng CBC (PuLP). Lượt 1: giới hạn **120 giây** cho cả 120 lần giải (30 instance × mức 100/75/50/25%). Lượt 2: các ca chưa chứng minh tối ưu sau lượt 1 (23 ca) chạy lại với giới hạn **600 giây**.
+- Kết quả cuối: **100/120 `optimal`**, **20/120 `best-known`** (mức 25%: 30/30 optimal; mức 50%: 5, mức 75%: 8, mức 100%: 7 ca best-known). Các ca best-known tập trung ở instance lớn (m ≥ khoảng 190).
+- Nhãn `optimal` chỉ gán khi `sol_status` của CBC = 1. (`LpStatus` của PuLP vẫn báo "Optimal" khi CBC hết giờ mà có nghiệm khả thi, nên không dùng được để phân biệt.)
+- Với ca `best-known`, "gap" là gap so với nghiệm tốt nhất ILP tìm được, **không phải** so với tối ưu tuyệt đối; tỉ lệ heuristic/ILP có thể > 1. Báo cáo phải nêu rõ, và nên tách số liệu thành hai nhóm (ca optimal / ca best-known).
+- Không có cận trên (dual bound) cho các ca best-known vì script chưa lấy được từ PuLP; đã quyết định không tăng thời gian chạy thêm (tăng 5× chỉ giải thêm 3 ca).
+
 ## 7. Việc cần làm trước khi viết code
 
 1. Bạn duyệt hoặc sửa mục 2, 3, 4 (đánh dấu CHỜ DUYỆT).

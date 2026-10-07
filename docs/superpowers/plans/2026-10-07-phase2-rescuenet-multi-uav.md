@@ -53,8 +53,8 @@ Các tình huống spec ngầm đòi hỏi nhưng dễ bị bỏ sót (mỗi dò
 | 1 | Risk map từ mask (`rn/risk.py`) | 07/10 | ✅ đã commit |
 | 2 | Chọn ảnh phân tầng (`rn/select.py`) | 07/10 | ✅ đã commit |
 | 3 | Sinh route/instance (`rn/routes.py`) | 08/10 | ✅ đã commit |
-| 4 | Chi phí tham chiếu, ngân sách, CLI chuẩn bị `07` | 08/10 | ✅ (chưa commit) |
-| 5 | ILP có trọng số + per-UAV (`08`) | 08/10 | ⬜ |
+| 4 | Chi phí tham chiếu, ngân sách, CLI chuẩn bị `07` | 08/10 | ✅ đã commit |
+| 5 | ILP có trọng số + per-UAV (`08`) | 08/10 | ✅ (chưa commit; 20/120 vẫn best-known) |
 | 6 | Greedy per-UAV: đề xuất + naive (`09`) | 09/10 | ⬜ |
 | 7 | Validator per-UAV (`10`) | 09/10 | ⬜ |
 | 8 | Chạy toàn bộ + tổng hợp + Wilcoxon (`11`) | 10/10 | ⬜ |
@@ -1486,3 +1486,4 @@ git status                       # data/RescueNet/ không xuất hiện
 **Type consistency:** `build_instance` khóa `route_uav/uav_share/reference_cost/weights/costs/sets` được `budgets.py`, `08`, `09`, `10` dùng đúng tên; `budgets_for_level(instance, level)` trả `list[int]` khớp `budget_values`; `objective` = tổng rủi ro ở mọi kết quả; `algorithm` của ILP = `"ilp_uav"` khớp `10` và `11`; kết quả naive/proposed dùng `name_out` làm `algorithm` (nên `proposed`/`naive`/`abl_*` khớp `11`).
 
 **Review Focus:** 6 mục đều có test: (1) Task 1 `crops_remainder`; (2) Task 3 `all_zero_risk_raises` + Task 2 filter; (3) Task 3 `duplicate_cover_keeps_cheapest`; (4) Task 4 `ignores_cells_no_route_can_cover`; (5) Task 5 `budget_below_every_route`, Task 6 `budget_below_every_route`; (6) Task 7 `flags_uav_over_own_budget`.
+- 07/10/2026: xong Task 5 (`pipeline/08_ilp_uav.py`, 4 test, tổng 53 test xanh), chưa commit. Đã commit Task 4 (01c978a). **Lỗi bắt được:** `LpStatus` của PuLP vẫn báo "Optimal" khi CBC hết giờ; nhãn phải dựa vào `prob.sol_status == LpSolutionOptimal` (hàm `status_label`, có test). Kết quả ILP (120 lần, 30 instance × 4 mức), time limit 120s rồi chạy lại 23 ca best-known với 600s: 100 optimal, 20 best-known còn lại (mức 50%: 5, 75%: 8, 100%: 7; mức 25%: 30/30 optimal). 20 ca best-known tập trung ở instance lớn (11702, 11714, 12078, 12221, 12437, 13085, 13629, 14935). Tăng 5x thời gian chỉ giải thêm 3 ca. Báo cáo: gap ở các ca này là so với best-known, không phải tối ưu tuyệt đối; tỉ lệ heuristic/ILP có thể > 1. Task kế tiếp: Task 6 (greedy per-UAV `09`).
