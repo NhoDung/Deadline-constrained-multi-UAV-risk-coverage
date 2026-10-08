@@ -16,11 +16,11 @@ Trước khi nhìn vào file thật (713 dòng số, khó đọc bằng mắt), 
 | S3 | 1 | ô1 |
 | S4 | 4 | ô1, ô2, ô3 |
 
-Đây chính là bài toán Budgeted Maximum Coverage mô tả ở mục 1 project-brief.md — chỉ là thu nhỏ lại để nhìn cho rõ.
+Đây chính là bài toán Budgeted Maximum Coverage mô tả ở README (mục "Bài toán và khái niệm nền") — chỉ là thu nhỏ lại để nhìn cho rõ.
 
 ## 2. File raw OR-Library được ghi theo chiều "ô → gói"
 
-File gốc **không** lưu theo bảng ở trên (gói → ô nó phủ). Nó lưu **ngược lại**: với mỗi ô, liệt kê **những gói nào phủ ô đó**. Đây là quy ước riêng của định dạng OR-Library (mục 2 project-brief.md).
+File gốc **không** lưu theo bảng ở trên (gói → ô nó phủ). Nó lưu **ngược lại**: với mỗi ô, liệt kê **những gói nào phủ ô đó**. Đây là quy ước riêng của định dạng OR-Library.
 
 Nếu ghi ví dụ 3 ô/4 gói ở trên theo đúng kiểu file thật, nó sẽ là:
 
@@ -34,7 +34,7 @@ Nếu ghi ví dụ 3 ô/4 gói ở trên theo đúng kiểu file thật, nó s�
 
 So khớp lại với bảng ở mục 1: ô1 được phủ bởi S1, S3, S4 ✓ — đúng.
 
-**Lưu ý quan trọng (đã ghi ở mục 2 project-brief.md):**
+**Lưu ý quan trọng:**
 - Các số này **không bắt buộc mỗi dòng một ý nghĩa cố định** — file thật có thể ngắt dòng tùy ý giữa chừng một danh sách. Ví dụ dòng "3 1 3 4" ở trên có thể trong file thật bị tách thành 2 dòng "3 1" và "3 4". Vì vậy khi đọc file, **không đọc theo từng dòng**, mà phải đọc **toàn bộ file thành một dãy số liên tục**, rồi tự bóc tách theo đúng quy tắc (m, n, rồi n chi phí, rồi lặp qua từng ô: 1 số đếm + danh sách chỉ số).
 - Chỉ số gói là **1-indexed** (gói đầu tiên là số 1, không phải 0).
 
@@ -82,7 +82,7 @@ graph LR
     end
 ```
 
-Đây chính là lý do project-brief.md nhấn mạnh: **"code đọc dữ liệu phải đảo lại thành gói → ô"** — không phải chi tiết vặt, mà là bước bắt buộc để dữ liệu dùng được.
+Đây chính là lý do cần nhớ: **code đọc dữ liệu phải đảo lại thành gói → ô** — không phải chi tiết vặt, mà là bước bắt buộc để dữ liệu dùng được.
 
 ## 5. Toàn bộ pipeline chuyển đổi
 

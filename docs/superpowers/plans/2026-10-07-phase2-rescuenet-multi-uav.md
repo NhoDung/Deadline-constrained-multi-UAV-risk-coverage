@@ -20,7 +20,7 @@
 - Ngân sách: `B_u(level) = floor(level × R × share_u / 100)` với `R` = chi phí nhỏ nhất để phủ mọi ô **có route phủ được** (ILP set cover trên toàn bộ route, bỏ qua phân chia UAV), `share_u ∝ 1 + ε_u`, `ε_u ∈ [−0.2, 0.2]` sinh theo seed. Mức mặc định: 100, 75, 50, 25.
 - Mục tiêu = **tổng điểm rủi ro** của ô được phủ. Trường kết quả `objective` = tổng điểm rủi ro (khác Pha 1, nơi `objective` là số ô).
 - Docstring/comment bằng tiếng Việt, như code hiện có. Tên hàm/biến tiếng Anh.
-- **Không chỉnh heuristic để khớp ILP**; báo cáo gap trung thực (project-brief mục 7).
+- **Không chỉnh heuristic để khớp ILP**; báo cáo gap trung thực (xem README, mục "Nguyên tắc làm việc").
 - Mọi con số trong báo cáo lấy từ file kết quả/`summary.csv`, **không để AI tự viết số**.
 - Chỉ commit khi người dùng đồng ý. Làm trên nhánh `phase2-rescuenet`. Commit message kết thúc bằng dòng `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>`.
 

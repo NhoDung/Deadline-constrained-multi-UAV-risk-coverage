@@ -1,10 +1,10 @@
 # Thiết kế: ILP solver chính xác (PuLP)
 
-> Mục tiêu: script `pipeline/03_solve_ilp.py`, dùng làm (1) đáp án tối ưu tham chiếu cho mọi mức ngân sách, và (2) công cụ tự tái lập bảng OPT (mục 3 project-brief.md) để xác nhận dữ liệu + pipeline đọc file không có lỗi.
+> Mục tiêu: script `pipeline/03_solve_ilp.py`, dùng làm (1) đáp án tối ưu tham chiếu cho mọi mức ngân sách, và (2) công cụ tự tái lập bảng OPT (`pipeline/opt_reference.py`) để xác nhận dữ liệu + pipeline đọc file không có lỗi.
 
 ## 1. Hai bài toán, hai công thức ILP khác nhau
 
-Brief phân biệt rõ 2 bài toán (mục 3): **Set Cover** (phủ hết, tối thiểu chi phí — dùng để tính OPT) và **Budgeted Max Coverage** (ngân sách cố định, tối đa hóa số ô phủ — dùng để tính đáp án ở B=75/50/25%). Solver cần chạy được cả hai chế độ.
+Có hai bài toán khác nhau cần phân biệt: **Set Cover** (phủ hết, tối thiểu chi phí — dùng để tính OPT) và **Budgeted Max Coverage** (ngân sách cố định, tối đa hóa số ô phủ — dùng để tính đáp án ở B=75/50/25%). Solver cần chạy được cả hai chế độ.
 
 ### Chế độ A — Set Cover (tính OPT)
 
@@ -75,8 +75,8 @@ python pipeline/03_solve_ilp.py --instances scpa1,scp61 --modes setcover,budgete
 
 - `--instances`: danh sách tên instance (mặc định: tất cả trong `data/processed/`).
 - `--modes`: `setcover`, `budgeted`, hoặc cả hai (mặc định: cả hai).
-- `--time-limit`: giây, cho **mỗi lần giải riêng lẻ** (mặc định 120s). Batch đầy đủ 45 instance đã chạy với `--time-limit 600` (10 phút, nằm trong khoảng 10–30 phút của brief mục 4); thực tế không lần giải nào chạm giới hạn này.
-- Chế độ `budgeted` cần `OPT` đã biết trước để tính `B` → dùng **bảng OPT tham khảo ở mục 3 project-brief.md** (hard-code trong script), vì đây là số liệu có sẵn cho đúng 45 instance đang dùng. Nếu instance không có trong bảng tham khảo, script báo lỗi rõ ràng và bỏ qua thay vì đoán.
+- `--time-limit`: giây, cho **mỗi lần giải riêng lẻ** (mặc định 120s). Batch đầy đủ 45 instance đã chạy với `--time-limit 600` (10 phút); thực tế không lần giải nào chạm giới hạn này.
+- Chế độ `budgeted` cần `OPT` đã biết trước để tính `B` → dùng **bảng OPT tham khảo** `pipeline/opt_reference.py` (nguồn: Ohlsson, Peterson & Söderberg 1999, bảng C2; hard-code trong script), vì đây là số liệu có sẵn cho đúng 45 instance đang dùng. Nếu instance không có trong bảng tham khảo, script báo lỗi rõ ràng và bỏ qua thay vì đoán.
 - Mức `B = 100% OPT` **không cần giải ILP** (đúng mục 4: đây là mốc kiểm tra miễn phí) → mặc định `--modes budgeted` chỉ chạy 3 mức 75%/50%/25%. Muốn kiểm tra mức 100% thì dùng trực tiếp kết quả từ chế độ `setcover` (tập gói đó phủ 100% với chi phí = OPT).
 
 ## 5. Kết quả chạy đầy đủ (45 instance)
@@ -84,8 +84,8 @@ python pipeline/03_solve_ilp.py --instances scpa1,scp61 --modes setcover,budgete
 Đã chạy đủ 45 instance × (1 setcover + 3 mức budgeted) = **180 lần giải**, `time_limit = 600s`, kết quả nằm ở `data/results/ilp/`.
 
 - **Tất cả 180 lần đều `status = "optimal"`** — không có lần nào hết giờ, nên không có kết quả `best-known` nào; các con số ở B = 75/50/25% là tối ưu thật sự, không phải cận.
-- **Tái lập OPT:** cả 45 nghiệm setcover khớp đúng bảng OPT tham khảo (brief mục 3), và mỗi nghiệm phủ đủ 100% ô. Việc này đồng thời xác nhận code đọc/chuyển đổi dữ liệu (`pipeline/02_convert_to_input.py`) không có lỗi.
-- **Hệ quả 1 (brief mục 5):** mọi nghiệm budgeted ở B < OPT đều phủ < m ô; chi phí luôn ≤ B.
+- **Tái lập OPT:** cả 45 nghiệm setcover khớp đúng bảng OPT tham khảo (`pipeline/opt_reference.py`), và mỗi nghiệm phủ đủ 100% ô. Việc này đồng thời xác nhận code đọc/chuyển đổi dữ liệu (`pipeline/02_convert_to_input.py`) không có lỗi.
+- **Hệ quả 1 (xem README, mục "Bài toán và khái niệm nền"):** mọi nghiệm budgeted ở B < OPT đều phủ < m ô; chi phí luôn ≤ B.
 - **Thời gian:** mỗi lần giải tối đa ~14 giây (setcover tối đa ~10 giây, tổng 45 lần setcover ~54 giây), thấp hơn nhiều so với dự tính "hàng chục giờ" ban đầu.
 - **Kiểm tra lại bằng validator:** `python pipeline/05_validate_solution.py` (xem mục 6) tự tính lại chi phí/độ phủ từ `selected_packages` của cả 180 file, không phụ thuộc số liệu solver tự báo cáo.
 
@@ -108,4 +108,4 @@ Thoát với mã 1 nếu có lỗi (dùng được trong CI hoặc trước khi 
 
 ## 7. Việc còn lại liên quan đến ILP
 
-- Chưa có bảng tổng hợp gap giữa heuristic và ILP, cũng chưa xuất CSV theo quy ước brief mục 8 (cột `instance, thuật_toán, mức_ngân_sách, seed, số_ô_phủ, chi_phí, thời_gian_chạy`); hiện kết quả chỉ ở dạng JSON.
+- Chưa có bảng tổng hợp gap giữa heuristic và ILP, cũng chưa xuất CSV tổng hợp cho Pha 1; kết quả Pha 1 chỉ ở dạng JSON. (Pha 2 đã có `summary.csv` với cột `instance, algorithm, budget_level, seed, covered_cells, covered_weight, cost, time_seconds`.)

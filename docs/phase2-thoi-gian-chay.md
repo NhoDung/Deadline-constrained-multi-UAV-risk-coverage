@@ -163,7 +163,7 @@ Tổng cộng: ILP **3,74 giờ CPU**, `proposed` **4,4 giây** cho 120 lần gi
 1. **Thời gian heuristic gần tuyến tính theo `n`** (`a = 1,06`) và gần như độc lập với `m` (`a = 0,12`), đúng như phân tích lý thuyết `O((1 + S + r·k)·n·L·W)`. Nên mở rộng sang bài toán lớn hơn rất khả thi: 18.841 route vẫn dưới 2,5 giây.
 2. **Thời gian bị chi phối bởi seed**, không phải local search hay lazy evaluation. Đây là chỗ cần chỉnh nếu muốn nhanh hơn: giảm từ 20 xuống 10 seed tiết kiệm khoảng 40% thời gian với mức mất chất lượng nhỏ.
 3. **Lazy evaluation (CELF) giúp khoảng 2 lần**, ít hơn kỳ vọng "nhanh hơn rất nhiều", vì `k` nhỏ và phần khởi tạo `n` lần đánh giá là chi phí chính.
-4. **Đánh đổi chất lượng và thời gian:** `proposed` đạt 0,969 đến 0,987 so với ILP trong khoảng 11 đến 58 ms, trong khi ILP mất hàng chục đến hàng trăm giây (khoảng 3.000 lần) và có ca không chứng minh được tối ưu. Với tình huống cứu hộ cần ra quyết định nhanh (đã nêu trong brief), đánh đổi này hợp lý. Tuy vậy vẫn còn khoảng 1 đến 3 điểm phần trăm so với tối ưu.
+4. **Đánh đổi chất lượng và thời gian:** `proposed` đạt 0,969 đến 0,987 so với ILP trong khoảng 11 đến 58 ms, trong khi ILP mất hàng chục đến hàng trăm giây (khoảng 3.000 lần) và có ca không chứng minh được tối ưu. Với tình huống cứu hộ cần ra quyết định nhanh, đánh đổi này hợp lý. Tuy vậy vẫn còn khoảng 1 đến 3 điểm phần trăm so với tối ưu.
 5. **`naive` chậm hơn `proposed` khoảng 1,6 lần** (58,1 ms so với 36,7 ms) dù đơn giản về ý tưởng, vì ngân sách chung cho lời giải nhiều route hơn nên greedy và local search chạy nhiều bước hơn.
 
 ## 5. Những điều không nên khẳng định

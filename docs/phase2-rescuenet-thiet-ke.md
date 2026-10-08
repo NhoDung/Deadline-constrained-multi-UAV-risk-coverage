@@ -85,7 +85,7 @@ Bảng đề xuất (khác proposal ở chỗ **Tree = 0**):
 | 1 | Water (1), Building-No-Damage (2), Vehicle (6), Road-Clear (7), Pool (10) | Có giá trị **khảo sát/xác nhận tình trạng** (nước lũ có thể có người mắc kẹt, xe/đường cần kiểm tra), nhưng không phải hư hại đã xác nhận. |
 | 0 | Background (0), **Tree (9)** | Không có giá trị cứu hộ trực tiếp. |
 
-Điểm của ô = trung bình điểm theo pixel trong ô (như code mẫu trong proposal). Ô có điểm 0 **bị loại khỏi universe**, nếu không mệnh đề "ngân sách < OPT thì không thể phủ 100%" (project-brief mục 5) mất ý nghĩa.
+Điểm của ô = trung bình điểm theo pixel trong ô (như code mẫu trong proposal). Ô có điểm 0 **bị loại khỏi universe**, nếu không mệnh đề "ngân sách < OPT thì không thể phủ 100%" (Hệ quả 1, xem README) mất ý nghĩa.
 
 **Lý do chọn thang thứ tự 3/2/1/0:** thang này **thứ tự (ordinal)**, bám theo mức nghiêm trọng của hư hại (định nghĩa theo FEMA mà bài báo RescueNet dùng). Không có căn cứ định lượng cho tỉ lệ 3:2:1, nên không khẳng định đó là "rủi ro thật".
 

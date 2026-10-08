@@ -169,7 +169,7 @@ python -m pytest tests/
 
 ## Thêm thuật toán mới
 
-1. Đặt code trong `pipeline/` (đánh số tiếp theo, ví dụ `07_...py`) hoặc `proposed-algorithm/`, đọc instance từ `data/processed/<tên>.json`.
+1. Đặt code trong `pipeline/` (đánh số tiếp theo, ví dụ `13_...py`; các số 01–12 đã dùng) hoặc `proposed-algorithm/`, đọc instance từ `data/processed/<tên>.json`.
 2. Dùng `pipeline/opt_reference.py` để tính `B = floor(mức% × OPT)`.
 3. Ghi kết quả JSON cùng format vào `data/results/<tên thuật toán>/`, với các trường `instance, algorithm, mode, budget_level, budget_value, status, objective, cost, selected_packages, solve_time_seconds`. Nếu có yếu tố ngẫu nhiên, chạy 20–30 seed và ghi thêm `seed`.
 4. Viết test trước (TDD), rồi chạy bước 05 để chắc kết quả hợp lệ. Không chỉnh heuristic cho khớp đáp án ILP.
