@@ -113,6 +113,8 @@ Bảng đề xuất (khác proposal ở chỗ **Tree = 0**):
 
 **Bảo vệ:** nêu rõ trong báo cáo; dùng seed và danh sách cố định; kiểm tra thêm bằng cách chạy lại trên một mẫu 30 ảnh khác (seed khác) để xem kết luận có ổn định không.
 
+> **Cập nhật 08/10/2026:** sau khi có kết quả trên 30 ảnh, nhóm chạy lại toàn bộ pipeline trên **mọi ảnh đủ điều kiện (≥ 60 ô điểm > 0): 350/449 ảnh** (tag `full_g20_default`), nên lý do "30 ảnh vì thời gian ILP" ở trên chỉ còn đúng cho lần chạy thử và cho ablation/sensitivity chi tiết. Tầng hư hại của 350 ảnh chia theo tam phân vị trong chính 350 ảnh (116 thấp, 116 vừa, 118 cao), khác tam phân vị khi chọn 30 ảnh. 99 ảnh bị loại (45 ảnh không có ô điểm > 0). Kết quả: `docs/phase2-ket-qua.md` mục 2.
+
 ## 5. Mô hình multi-UAV (đã được chốt)
 
 - **K UAV** (đề xuất K = 3 hoặc 4), mỗi UAV `u` có pin riêng `B_u` khác nhau (khoảng ±20% quanh giá trị chung) để ngân sách riêng có ý nghĩa.

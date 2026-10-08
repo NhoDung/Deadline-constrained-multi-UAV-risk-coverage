@@ -1,6 +1,8 @@
 # Pha 2: kết quả thực nghiệm RescueNet multi-UAV
 
-> Số liệu dán **nguyên từ output** của `pipeline/11_summarize_rn.py` (chạy 07/10/2026). Không số nào viết tay. Thiết kế và lý do các lựa chọn: `docs/phase2-rescuenet-thiet-ke.md`; cách chạy: `docs/huong-dan-chay.md`; định dạng dữ liệu: `docs/mo-hinh-du-lieu.md` mục 8.
+> Số liệu dán **nguyên từ output** của `pipeline/11_summarize_rn.py` (chạy 07 và 08/10/2026). Không số nào viết tay. Thiết kế và lý do các lựa chọn: `docs/phase2-rescuenet-thiet-ke.md`; cách chạy: `docs/huong-dan-chay.md`; định dạng dữ liệu: `docs/mo-hinh-du-lieu.md` mục 8.
+
+> Phân tích thời gian chạy (Big-O lý thuyết và đo thực tế) nằm ở `docs/phase2-thoi-gian-chay.md`.
 
 ## 1. Cách đọc các bảng
 
@@ -8,9 +10,70 @@
 - **`n` có thể nhỏ hơn 30** vì instance có ILP tối ưu bằng 0 (ở mức pin thấp không UAV nào đủ pin bay route nào) bị loại khỏi tỉ lệ. Ví dụ lưới 10×10 ở 25%: n = 20.
 - **ILP `best-known`**: CBC hết giờ, chưa chứng minh tối ưu, nên tỉ lệ so với nghiệm tốt nhất ILP tìm được và **có thể > 1** (đã xảy ra, xem mục 4).
 - **Thắng/hòa/thua** là số instance mà `proposed` > / ≈ / < thuật toán so sánh (dung sai 1e-9). **Wilcoxon** hai phía ghép cặp theo instance (cả hai thuật toán đều deterministic nên n = số instance, không phải số seed).
-- 30 instance là **một lần chọn ảnh có seed cố định** (seed 2026, 10 ảnh mỗi tầng hư hại), không phải mẫu ngẫu nhiên của mọi tình huống. P-value nhỏ cho thấy chênh lệch ổn định *trên tập này*, không phải xác suất tổng quát.
+- **Kết quả chính (mục 2) chạy trên 350 ảnh**: toàn bộ ảnh của tập validation RescueNet có ít nhất 60 ô điểm > 0 (350/449). Không phải mẫu ngẫu nhiên: 99 ảnh còn lại bị loại vì quá ít ô để phủ (45 ảnh không có ô nào). Các phần ablation chi tiết, sensitivity (mục 3b, 4) dùng **lần chạy thử 30 ảnh phân tầng** (seed 2026, 10 ảnh mỗi tầng; cả 30 ảnh đều nằm trong 350). P-value nhỏ cho thấy chênh lệch ổn định *trên các ảnh này*, không phải xác suất tổng quát cho mọi tình huống RescueNet.
 
-## 2. Kết quả chính (`g20_default`: lưới 20×20, Tree = 0, K = 4 UAV)
+## 2. Kết quả chính: toàn bộ 350 ảnh đủ điều kiện (`full_g20_default`: lưới 20×20, Tree = 0, K = 4 UAV)
+
+350 instance × 4 mức ngân sách = 1400 lần giải cho mỗi thuật toán. Quy mô instance: `m` từ 61 đến 400 (trung bình 174), `n` từ 251 đến 1097 (trung bình 719), `R` từ 86 đến 720. Chia theo mức hư hại (tam phân vị trong 350 ảnh): 116 thấp, 116 vừa, 118 cao. Validator: **8400 file kết quả, 0 lỗi**.
+
+**Trạng thái ILP** (giới hạn 120 giây, **không** chạy lại 600 giây): 1007 `optimal`, **393 `best-known`** (28%). Theo mức ngân sách (optimal / best-known): 25%: 344 / 6; 50%: 251 / 99; 75%: 218 / 132; 100%: 194 / 156. Các ca `best-known` có `m` trung bình 249, các ca `optimal` có `m` trung bình 145. Một ca ở mức 25% có tối ưu ILP bằng 0 (bị loại khỏi tỉ lệ, nên n = 349 ở mức đó).
+
+Tỉ lệ objective so với ILP, trung bình (nhỏ nhất trong ngoặc):
+
+| Mức | `proposed` | `naive` | n |
+|---|---|---|---|
+| 25% | 0.9839 (0.8815) | 0.9328 (0.3689) | 349 |
+| 50% | 0.9706 (0.8619) | 0.9084 (0.6594) | 350 |
+| 75% | 0.9728 (0.8897) | 0.9211 (0.6722) | 350 |
+| 100% | 0.9843 (0.9054) | 0.9410 (0.6941) | 350 |
+
+`proposed` so với `naive`, theo instance:
+
+| Mức | Thắng/hòa/thua | Wilcoxon p |
+|---|---|---|
+| 25% | 265 / 83 / 1 | 4.511e-45 |
+| 50% | 321 / 23 / 6 | 8.208e-55 |
+| 75% | 333 / 6 / 11 | 1.251e-56 |
+| 100% | 334 / 1 / 15 | 3.894e-57 |
+
+**Tách theo trạng thái ILP** (tỉ lệ trung bình `proposed` / `naive`):
+
+| Mức | ILP `optimal` (n) | ILP `best-known` (n) |
+|---|---|---|
+| 25% | 0.9838 / 0.9324 (343) | 0.9867 / 0.9566 (6) |
+| 50% | 0.9715 / 0.9013 (251) | 0.9682 / 0.9265 (99) |
+| 75% | 0.9702 / 0.9079 (218) | 0.9772 / 0.9429 (132) |
+| 100% | 0.9787 / 0.9222 (194) | 0.9913 / 0.9645 (156) |
+
+**Heuristic vượt ILP:** chỉ xảy ra ở các ca ILP `best-known` (`proposed` 38 lần, `naive` 11 lần trên 1400), lớn nhất 1.0391; **không lần nào vượt ILP `optimal`** (validator kiểm tra mọi file). Nghĩa là ILP `best-known` không phải cận trên, và tỉ lệ ở các ca đó chỉ là so với nghiệm tốt nhất ILP tìm được.
+
+**Ablation trên 350 ảnh** (tỉ lệ trung bình; `proposed` đầy đủ so với bản bỏ bớt: thắng / hòa / thua):
+
+| Biến thể | 25% | 50% | 75% | 100% |
+|---|---|---|---|---|
+| `abl_ratio_only` | 0.9456 | 0.9190 | 0.9301 | 0.9545 |
+| `abl_no_seed` | 0.9587 | 0.9367 | 0.9451 | 0.9670 |
+| `abl_no_ls` | 0.9793 | 0.9630 | 0.9672 | 0.9809 |
+| `proposed` | 0.9839 | 0.9706 | 0.9728 | 0.9843 |
+| `naive` | 0.9328 | 0.9084 | 0.9211 | 0.9410 |
+
+| So với | 25% | 50% | 75% | 100% |
+|---|---|---|---|---|
+| `abl_no_ls` | 100/249/0 | 192/158/0 | 237/113/0 | 249/101/0 |
+| `abl_no_seed` | 203/142/4 | 283/57/10 | 301/29/20 | 312/19/19 |
+| `abl_ratio_only` | 257/92/0 | 326/24/0 | 338/12/0 | 347/3/0 |
+
+(Mọi p-value Wilcoxon của ablation nằm trong khoảng 1e-18 đến 1e-58.) Kết luận ablation giống lần chạy thử 30 ảnh: mỗi thành phần đều đóng góp, bỏ **seed** mất nhiều hơn bỏ **local search**, và riêng ratio greedy per-UAV (`abl_ratio_only`) chỉ hơn `naive` khoảng 0.9 đến 1.4 điểm phần trăm.
+
+**Theo mức hư hại của ảnh** (tỉ lệ trung bình so với ILP, gộp 4 mức; `proposed` / `naive`): thấp 0.9807 / 0.9217 (n = 463), vừa 0.9778 / 0.9277 (n = 464), cao 0.9752 / 0.9281 (n = 472). Không có khác biệt lớn giữa các tầng.
+
+**Ca ngoại lệ:** `naive` đạt thấp nhất 0.3689 ở ảnh 11511 (mức 25%, tầng vừa, `m` = 91, `n` = 399), nơi `proposed` đạt 1.0000 so với ILP `optimal`.
+
+**So với lần chạy thử 30 ảnh** (`proposed` / `naive` ở 25 / 50 / 75 / 100%): 30 ảnh cho 0.987 / 0.974 / 0.969 / 0.980 và 0.938 / 0.898 / 0.909 / 0.922; 350 ảnh cho 0.984 / 0.971 / 0.973 / 0.984 và 0.933 / 0.908 / 0.921 / 0.941. Chênh nhau tối đa khoảng 2 điểm phần trăm, **kết luận không đổi**.
+
+**Thời gian** (xem `docs/phase2-thoi-gian-chay.md` mục 8): `proposed` trung bình 46,4 ms, lớn nhất 245 ms; `naive` 66,5 ms, lớn nhất 294 ms; ILP trung bình 3,2 / 42,2 / 60,0 / 66,2 giây theo mức 25 / 50 / 75 / 100% (nhiều ca chạm giới hạn 120 giây), tổng 16,7 giờ CPU so với 65 giây của `proposed`.
+
+## 2b. Lần chạy thử trên 30 ảnh phân tầng (`g20_default`: lưới 20×20, Tree = 0, K = 4 UAV)
 
 ILP: 100/120 `optimal`, 20/120 `best-known` (giới hạn 120 giây, ca chưa tối ưu chạy lại 600 giây). Mức 25%: 30/30 optimal; mức 50%: 5, 75%: 8, 100%: 7 ca best-known.
 
@@ -34,7 +97,7 @@ Giá trị nhỏ nhất của `proposed`: 0.9324 / 0.9042 / 0.8897 / 0.9243; c�
 
 Có 4 ca `naive` tốt hơn `proposed` (2 ở mức 50%, 2 ở mức 100%): `proposed` không thống trị tuyệt đối.
 
-## 3. Ablation (`g20_default`)
+## 3. Ablation trên 30 ảnh (`g20_default`)
 
 Tỉ lệ trung bình so với ILP (n = 30):
 
@@ -99,12 +162,12 @@ Cùng 30 ảnh (trừ ghi chú), đổi một thông số. Tỉ lệ trung bình
 ## 5. Giới hạn cần nêu trong báo cáo
 
 1. **Instance tổng hợp.** Route, pin, K = 4 UAV và công thức ngân sách do nhóm thiết kế; chỉ bản đồ rủi ro dựa trên nhãn thật của RescueNet (tập validation).
-2. **Mức pin thấp khắc nghiệt.** Trên `g20_default`, số cặp (instance, UAV) có pin nhỏ hơn route rẻ nhất của chính UAV đó: 28/120 ở mức 25%, 9 ở 50%, 3 ở 75%, 1 ở 100%.
-3. **ILP không phải luôn tối ưu** (mục 2 và 4). Mọi tỉ lệ ở các ca `best-known` là so với best-known.
-4. **Chọn ảnh** dùng nhóm hư hại suy từ mask (tập validation không có nhãn 0/1/2), một seed cố định, không kiểm chứng trên mẫu ảnh khác.
+2. **Mức pin thấp khắc nghiệt.** Trên 30 ảnh `g20_default` (chưa đo lại cho 350 ảnh), số cặp (instance, UAV) có pin nhỏ hơn route rẻ nhất của chính UAV đó: 28/120 ở mức 25%, 9 ở 50%, 3 ở 75%, 1 ở 100%.
+3. **ILP không phải luôn tối ưu** (mục 2 và 4): trên 350 ảnh có 393/1400 ca (28%) chỉ `best-known` sau 120 giây, tập trung ở `m` lớn và mức ngân sách cao (156/350 ở mức 100%). Mọi tỉ lệ ở các ca `best-known` là so với best-known và có thể > 1.
+4. **Chọn ảnh:** kết quả chính dùng mọi ảnh có ít nhất 60 ô điểm > 0 (350/449); 99 ảnh bị loại vì quá ít ô. Nhóm hư hại suy từ mask (tập validation không có nhãn 0/1/2). Chỉ dùng tập validation, không có tập test độc lập. Các kết quả ablation chi tiết và sensitivity (mục 3, 4) chỉ chạy trên 30 ảnh.
 5. **Baseline `naive` đã được sửa** thêm bước lấp lại pin dư sau khi bản đầu (chỉ bỏ route) cho thấy quá yếu (0.15 đến 0.71 so với ILP); số liệu trong tài liệu này là của bản đã sửa.
 6. **Chi phí tham chiếu `R`** do CBC giới hạn 120 giây có thể là cận trên khi hết giờ; chỉ ảnh hưởng thang ngân sách, dùng chung cho mọi thuật toán.
-7. **Khoảng cách tuyệt đối khiêm tốn:** `proposed` hơn `naive` khoảng 5 đến 8 điểm phần trăm ở cấu hình chính; còn 1 đến 3 điểm so với ILP.
+7. **Khoảng cách tuyệt đối khiêm tốn:** trên 350 ảnh, `proposed` hơn `naive` khoảng 4,3 đến 6,2 điểm phần trăm và còn kém ILP khoảng 1,6 đến 2,9 điểm (tính trên tỉ lệ trung bình, gồm cả ca ILP `best-known`).
 
 ## 6. Tái lập
 
@@ -123,3 +186,17 @@ python pipeline/11_summarize_rn.py
 ```
 
 Ca ILP `best-known` của `g20_default` được chạy lại với `--time-limit 600 --instances <id> --levels <mức>`.
+
+**Chạy đầy đủ trên 350 ảnh** (tag `full_g20_default`; instance và kết quả từng ảnh bị `.gitignore` chặn vì dung lượng, chỉ `selection_all.json`, `skipped_*.json` và `summary.csv` được lưu trong git):
+
+```bash
+python pipeline/07_rn_prepare.py select --all                           # -> data/rescuenet/selection_all.json
+for k in 0 1 2 3 4 5 6 7 8 9; do                                        # build song song 10 phần
+  python pipeline/07_rn_prepare.py build --selection selection_all.json --tag full_g20_default --shard $k/10 &
+done; wait
+python pipeline/09_greedy_uav.py --algorithm proposed --tag full_g20_default      # và naive, abl_* như trên
+python pipeline/08_ilp_uav.py --tag full_g20_default --instances <danh sách>      # chia thành ~10 phần chạy song song, ~2 giờ
+python pipeline/10_validate_uav.py --tag full_g20_default
+python pipeline/11_summarize_rn.py --tag full_g20_default
+```
+

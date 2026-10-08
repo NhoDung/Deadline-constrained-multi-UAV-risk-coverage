@@ -30,3 +30,10 @@ def test_returns_fewer_when_tier_is_small():
     stats = [make(i, i / 100) for i in range(6)]
     out = select_images(stats, n_per_tier=10, min_cells=60, seed=1)
     assert len(out) == 6
+
+
+def test_select_all_eligible_when_no_per_tier_limit():
+    stats = [make(i, i / 100, 100 if i % 4 else 10) for i in range(60)]
+    out = select_images(stats, n_per_tier=None, min_cells=60, seed=1)
+    assert sorted(s["id"] for s in out) == sorted(s["id"] for s in stats if s["nonzero_cells"] >= 60)
+    assert {s["tier"] for s in out} == {"low", "mid", "high"}

@@ -148,6 +148,8 @@ Thêm phụ thuộc: `pip install -r requirements.txt` (numpy, Pillow, scipy).
 | 10 kiểm tra | `python pipeline/10_validate_uav.py [--tag T]` | instance + kết quả | báo lỗi, mã thoát 0/1 |
 | 11 tổng hợp | `python pipeline/11_summarize_rn.py [--tag T]` | kết quả | `<tag>/summary.csv` + bảng gap, thắng/hòa/thua, Wilcoxon trên terminal |
 
+**Chạy đầy đủ trên mọi ảnh đủ điều kiện (350 ảnh):** `select --all` ghi `data/rescuenet/selection_all.json`; `build --selection selection_all.json --tag full_g20_default [--shard K/N]` sinh instance (chia `--shard 0/10` ... `9/10` để build song song). Các bước 08 đến 11 chạy với `--tag full_g20_default` (ILP nên chia `--instances` thành nhiều phần chạy song song, khoảng 2 giờ cho 1400 lần giải). Instance và kết quả từng ảnh của tag `full_*` bị `.gitignore` chặn; chỉ `summary.csv` và danh sách ảnh nằm trong git. Lệnh đầy đủ: `docs/phase2-ket-qua.md` mục 6.
+
 Bảng điểm có sẵn (`--table`): `default` (Tree = 0), `tree1`, `convex`, `damage_only` (xem `pipeline/rn/risk.py`).
 
 - **`proposed`:** ratio greedy + gói đơn tốt nhất + seed + local search, mọi bước kiểm tra pin riêng từng UAV. **`naive`:** greedy_ls với ngân sách chung `ΣB_u`, bỏ route của UAV vượt pin, rồi lấp lại pin dư.

@@ -5,8 +5,10 @@ import random
 TIERS = ("low", "mid", "high")
 
 
-def select_images(stats: list, n_per_tier: int, min_cells: int, seed: int) -> list:
+def select_images(stats: list, n_per_tier, min_cells: int, seed: int) -> list:
     """Lọc ảnh đủ ô điểm > 0, chia 3 tầng theo tỉ lệ hư hại, bốc ngẫu nhiên có seed.
+
+    `n_per_tier=None` nghĩa là lấy TOÀN BỘ ảnh đủ điều kiện (vẫn gán tầng, không bốc ngẫu nhiên).
 
     Tầng chia theo tam phân vị của `damage_frac` trong số ảnh đủ điều kiện
     (tập validation không có nhãn phân loại ảnh 0/1/2 chính thức).
@@ -18,6 +20,6 @@ def select_images(stats: list, n_per_tier: int, min_cells: int, seed: int) -> li
     rng = random.Random(seed)
     chosen = []
     for name, tier in zip(TIERS, tiers):
-        picked = rng.sample(tier, min(n_per_tier, len(tier)))
+        picked = list(tier) if n_per_tier is None else rng.sample(tier, min(n_per_tier, len(tier)))
         chosen += [{**s, "tier": name} for s in sorted(picked, key=lambda s: s["id"])]
     return chosen

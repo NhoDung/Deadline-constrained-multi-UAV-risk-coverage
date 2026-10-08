@@ -12,3 +12,13 @@ def test_build_from_mask_sets_reference_cost_and_is_deterministic():
     assert a == b
     assert a["m"] == 8  # 4 ô trái-trên + 4 ô phải-dưới có điểm > 0
     assert isinstance(a["reference_cost"], int) and a["reference_cost"] > 0
+
+
+def test_shard_items_partitions_without_overlap_or_loss():
+    from pipeline.rn_prepare import shard_items
+
+    items = list(range(10))
+    parts = [shard_items(items, k, 3) for k in range(3)]
+    assert sorted(x for p in parts for x in p) == items
+    assert all(len(set(a) & set(b)) == 0 for i, a in enumerate(parts) for b in parts[i + 1:])
+    assert shard_items(items, 0, 1) == items
