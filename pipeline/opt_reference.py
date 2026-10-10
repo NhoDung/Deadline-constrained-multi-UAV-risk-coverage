@@ -1,4 +1,4 @@
-"""Bảng OPT tham khảo — mục 3 project-brief.md (Ohlsson, Peterson & Söderberg 1999, bảng C2).
+"""Bảng OPT tham khảo (Ohlsson, Peterson & Söderberg 1999, arXiv:cs/9902025, bảng C2; số liệu gốc của Beasley 1987).
 
 Đã tự xác nhận lại bằng ILP (xem data/results/ilp/*_setcover.json): tất cả
 45 instance đều giải optimal và khớp bảng này.

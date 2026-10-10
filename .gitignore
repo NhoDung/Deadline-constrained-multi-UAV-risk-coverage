@@ -2,3 +2,6 @@
 __pycache__/
 .pytest_cache/
 .omc/
+data/RescueNet/
+data/rescuenet/full_*/instances/
+data/rescuenet/full_*/results/

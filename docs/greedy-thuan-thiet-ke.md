@@ -1,10 +1,10 @@
 # Thiết kế: Greedy thuần (baseline)
 
-> Mục tiêu: script `pipeline/04_greedy_pure.py` — thuật toán #2 trong mục 7 project-brief.md ("Greedy thuần — mỗi bước chọn gói phủ thêm được nhiều ô mới nhất"). Dùng làm baseline nhanh, so sánh với đáp án chính xác từ `pipeline/03_solve_ilp.py`.
+> Mục tiêu: script `pipeline/04_greedy_pure.py` — thuật toán greedy thuần của Pha 1 ("mỗi bước chọn gói phủ thêm được nhiều ô mới nhất"). Dùng làm baseline nhanh, so sánh với đáp án chính xác từ `pipeline/03_solve_ilp.py`.
 
 ## 1. Bài toán: Budgeted Max Coverage (chỉ chế độ budgeted)
 
-Không cần chạy setcover — OPT đã có sẵn và đã xác nhận đúng bằng ILP (`data/results/ilp/*_setcover.json`, mục 3 project-brief.md). Greedy chỉ chạy ở 3 mức ngân sách `B = floor(75%/50%/25% × OPT)`.
+Không cần chạy setcover — OPT đã có sẵn và đã xác nhận đúng bằng ILP (`data/results/ilp/*_setcover.json`; xem README, mục "Bài toán và khái niệm nền"). Greedy chỉ chạy ở 3 mức ngân sách `B = floor(75%/50%/25% × OPT)`.
 
 ## 2. Thuật toán
 
@@ -28,7 +28,7 @@ Vì bước chọn bỏ qua chi phí, thuật toán có thể chọn một gói 
 | 50% | 30 | 144 |
 | 25% | 15 | 148 |
 
-Ngân sách cao hơn (45) lại cho kết quả tệ hơn ngân sách thấp hơn (15/30) — vì ở B=45 thuật toán "khóa" vào một gói đắt, tốt ở bước đầu nhưng bóp nghẹt các bước sau; ở B=30/15 gói đó không vừa ngân sách nên thuật toán buộc phải chọn các gói rẻ, hiệu quả hơn. Đây là bằng chứng thực nghiệm khớp với brief mục 6: "Greedy theo tỉ lệ... đơn thuần, không kết hợp gói đơn tốt nhất, KHÔNG có bảo đảm xấp xỉ nào cả" — greedy thuần còn yếu hơn thế vì không xét tỉ lệ. Cần nêu rõ phát hiện này trong báo cáo (Discussion) làm minh chứng cho lý do cần các thuật toán #3, #4 tốt hơn.
+Ngân sách cao hơn (45) lại cho kết quả tệ hơn ngân sách thấp hơn (15/30) — vì ở B=45 thuật toán "khóa" vào một gói đắt, tốt ở bước đầu nhưng bóp nghẹt các bước sau; ở B=30/15 gói đó không vừa ngân sách nên thuật toán buộc phải chọn các gói rẻ, hiệu quả hơn. Đây là bằng chứng thực nghiệm khớp với nhận định (README, mục "Bài toán và khái niệm nền"): greedy theo tỉ lệ đơn thuần, không kết hợp gói đơn tốt nhất, không có bảo đảm xấp xỉ nào — greedy thuần còn yếu hơn thế vì không xét tỉ lệ. Cần nêu rõ phát hiện này trong báo cáo (Discussion) làm minh chứng cho lý do cần các thuật toán tốt hơn (greedy theo tỉ lệ, Khuller–Moss–Naor).
 
 ## 3. Độ phức tạp
 
@@ -61,7 +61,7 @@ python pipeline/04_greedy_pure.py --instances scpa1,scp61 --budget-levels 75,50,
 ```
 
 - `--instances`: mặc định tất cả 45 instance trong `data/processed/`.
-- `--budget-levels`: mặc định `75,50,25` (mức 100% không cần chạy — coverage = 100% chắc chắn, đã chứng minh mục 5 project-brief.md).
+- `--budget-levels`: mặc định `75,50,25` (mức 100% không chạy: đáp án tối ưu ở B = OPT chắc chắn phủ 100%, nên chỉ là mốc kiểm tra, xem README mục "Bài toán và khái niệm nền").
 - Không có `--time-limit`: thuật toán không cần time limit vì luôn chạy nhanh và không lặp vô hạn.
 
 ## 6. Refactor liên quan
@@ -97,4 +97,4 @@ Tỉ lệ = số ô phủ của greedy / số ô phủ tối ưu của ILP (đ�
 
 Thời gian chạy của greedy tối đa 14ms/lần; ILP mỗi lần giải tối đa ~14 giây.
 
-**Lưu ý khi đọc kết quả:** greedy thuần yếu vì bỏ qua chi phí, nên hay chọn một gói đắt phủ nhiều ô rồi cạn ngân sách. Hệ quả là kết quả **không đơn điệu theo ngân sách** ở 21/45 instance (ngân sách cao hơn lại phủ ít hơn), ví dụ `scpd5`: B=45 → 36 ô, B=30 → 144 ô, B=15 → 148 ô. Đây là điểm cần nêu trong phần Discussion của báo cáo, và là lý do cần các thuật toán tốt hơn (greedy theo tỉ lệ, Khuller–Moss–Naor, ...). Không có bảo đảm xấp xỉ nào cho thuật toán này (brief mục 6).
+**Lưu ý khi đọc kết quả:** greedy thuần yếu vì bỏ qua chi phí, nên hay chọn một gói đắt phủ nhiều ô rồi cạn ngân sách. Hệ quả là kết quả **không đơn điệu theo ngân sách** ở 21/45 instance (ngân sách cao hơn lại phủ ít hơn), ví dụ `scpd5`: B=45 → 36 ô, B=30 → 144 ô, B=15 → 148 ô. Đây là điểm cần nêu trong phần Discussion của báo cáo, và là lý do cần các thuật toán tốt hơn (greedy theo tỉ lệ, Khuller–Moss–Naor, ...). Không có bảo đảm xấp xỉ nào cho thuật toán này (README, mục "Bài toán và khái niệm nền").

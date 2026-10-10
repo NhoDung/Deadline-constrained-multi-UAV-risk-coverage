@@ -1,0 +1,32 @@
+{
+  "instance": "12016",
+  "algorithm": "abl_no_seed",
+  "mode": "budgeted_uav",
+  "budget_level": 50,
+  "budget_values": [
+    29,
+    33,
+    30,
+    31
+  ],
+  "status": "heuristic",
+  "objective": 60.933866666666674,
+  "covered_cells": 72,
+  "cost_per_uav": [
+    23,
+    33,
+    26,
+    30
+  ],
+  "selected_packages": [
+    344,
+    66,
+    536,
+    384
+  ],
+  "solve_time_seconds": 0.002,
+  "params": {
+    "seeds": 0,
+    "ls_rounds": 50
+  }
+}

@@ -66,7 +66,7 @@ def validate_solution(instance: dict, solution: dict, opt: int) -> list:
     if solution["objective"] != coverage:
         errors.append(f"số ô phủ khai báo {solution['objective']} khác số ô tính lại {coverage}")
     if coverage == m and budget < opt:
-        errors.append(f"phủ 100% ô với B={budget} < OPT={opt} (vi phạm Hệ quả 1, mục 5 project-brief.md)")
+        errors.append(f"phủ 100% ô với B={budget} < OPT={opt} (vi phạm Hệ quả 1, xem README)")
     return errors
 
 

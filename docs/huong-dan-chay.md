@@ -128,6 +128,35 @@ python pipeline/05_validate_solution.py --results-dir data/results/greedy
 - **Cách hoạt động:** bỏ qua số liệu thuật toán tự báo, tự tính lại chi phí và số ô phủ từ `selected_packages`. Báo lỗi khi: chi phí vượt `B`; `budget_value` khác `floor(mức% × OPT)`; `objective`/`cost` khai báo lệch số tính lại; gói ngoài phạm vi hoặc trùng; phủ 100% ô khi `B < OPT` (Hệ quả 1).
 - Chạy validator trước khi nộp hoặc báo cáo kết quả của **bất kỳ** thuật toán nào.
 
+## Pha 2: instance RescueNet multi-UAV (bước 07–11)
+
+Pha 2 dùng dữ liệu RescueNet (tập validation, `data/RescueNet/`, **không** nằm trong git) và nằm tách hẳn khỏi `data/results/`. Thiết kế và lý do các lựa chọn: `docs/phase2-rescuenet-thiet-ke.md`. Kết quả nằm ở `data/rescuenet/<tag>/`, với `tag = g<lưới>_<bảng điểm>` (mặc định `g20_default`).
+
+Thêm phụ thuộc: `pip install -r requirements.txt` (numpy, Pillow, scipy).
+
+```
+07 select → 07 build → 08 ILP ─┬→ 10 validate → 11 summarize
+                  └→ 09 greedy ┘
+```
+
+| Bước | Lệnh | Input | Output |
+|---|---|---|---|
+| 07 chọn ảnh | `python pipeline/07_rn_prepare.py select` | mask RescueNet | `data/rescuenet/image_stats.json`, `selection.json` (30 ảnh, 10 mỗi tầng hư hại, seed 2026) |
+| 07 sinh instance | `python pipeline/07_rn_prepare.py build [--grid 20] [--table default]` | `selection.json` + mask | `data/rescuenet/<tag>/instances/<id>.json`, `skipped.json` |
+| 08 ILP | `python pipeline/08_ilp_uav.py [--tag T] [--levels 100,75,50,25] [--time-limit 120] [--instances a,b]` | instance | `<tag>/results/ilp/<id>_<mức>.json` |
+| 09 greedy | `python pipeline/09_greedy_uav.py --algorithm proposed|naive [--tag T] [--name N] [--seeds 20] [--ls-rounds 50]` | instance | `<tag>/results/<tên>/<id>_<mức>.json` |
+| 10 kiểm tra | `python pipeline/10_validate_uav.py [--tag T]` | instance + kết quả | báo lỗi, mã thoát 0/1 |
+| 11 tổng hợp | `python pipeline/11_summarize_rn.py [--tag T]` | kết quả | `<tag>/summary.csv` + bảng gap, thắng/hòa/thua, Wilcoxon trên terminal |
+
+**Chạy đầy đủ trên mọi ảnh đủ điều kiện (350 ảnh):** `select --all` ghi `data/rescuenet/selection_all.json`; `build --selection selection_all.json --tag full_g20_default [--shard K/N]` sinh instance (chia `--shard 0/10` ... `9/10` để build song song). Các bước 08 đến 11 chạy với `--tag full_g20_default` (ILP nên chia `--instances` thành nhiều phần chạy song song, khoảng 2 giờ cho 1400 lần giải). Instance và kết quả từng ảnh của tag `full_*` bị `.gitignore` chặn; chỉ `summary.csv` và danh sách ảnh nằm trong git. Lệnh đầy đủ: `docs/phase2-ket-qua.md` mục 6.
+
+Bảng điểm có sẵn (`--table`): `default` (Tree = 0), `tree1`, `convex`, `damage_only` (xem `pipeline/rn/risk.py`).
+
+- **`proposed`:** ratio greedy + gói đơn tốt nhất + seed + local search, mọi bước kiểm tra pin riêng từng UAV. **`naive`:** greedy_ls với ngân sách chung `ΣB_u`, bỏ route của UAV vượt pin, rồi lấp lại pin dư.
+- **Ablation:** `--name abl_no_ls --ls-rounds 0`, `--name abl_no_seed --seeds 0`, `--name abl_ratio_only --seeds 0 --ls-rounds 0` (tên bắt đầu bằng `abl_` thì bước 11 tự so với `proposed`).
+- **Cẩn thận khi đọc ILP:** `status` chỉ là `optimal` khi CBC chứng minh được tối ưu; ca `best-known` nghĩa là hết giờ, tỉ lệ so với ILP có thể > 1.
+- Chạy song song ILP nên chia `--instances` thành vài phần, **không** chạy quá số nhân CPU (time limit tính theo giờ thực, tranh CPU làm ILP yếu đi).
+
 ## Chạy test
 
 ```bash
@@ -140,7 +169,7 @@ python -m pytest tests/
 
 ## Thêm thuật toán mới
 
-1. Đặt code trong `pipeline/` (đánh số tiếp theo, ví dụ `07_...py`) hoặc `proposed-algorithm/`, đọc instance từ `data/processed/<tên>.json`.
+1. Đặt code trong `pipeline/` (đánh số tiếp theo, ví dụ `13_...py`; các số 01–12 đã dùng) hoặc `proposed-algorithm/`, đọc instance từ `data/processed/<tên>.json`.
 2. Dùng `pipeline/opt_reference.py` để tính `B = floor(mức% × OPT)`.
 3. Ghi kết quả JSON cùng format vào `data/results/<tên thuật toán>/`, với các trường `instance, algorithm, mode, budget_level, budget_value, status, objective, cost, selected_packages, solve_time_seconds`. Nếu có yếu tố ngẫu nhiên, chạy 20–30 seed và ghi thêm `seed`.
 4. Viết test trước (TDD), rồi chạy bước 05 để chắc kết quả hợp lệ. Không chỉnh heuristic cho khớp đáp án ILP.

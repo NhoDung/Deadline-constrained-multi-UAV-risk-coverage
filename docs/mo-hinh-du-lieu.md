@@ -16,11 +16,11 @@ Trước khi nhìn vào file thật (713 dòng số, khó đọc bằng mắt), 
 | S3 | 1 | ô1 |
 | S4 | 4 | ô1, ô2, ô3 |
 
-Đây chính là bài toán Budgeted Maximum Coverage mô tả ở mục 1 project-brief.md — chỉ là thu nhỏ lại để nhìn cho rõ.
+Đây chính là bài toán Budgeted Maximum Coverage mô tả ở README (mục "Bài toán và khái niệm nền") — chỉ là thu nhỏ lại để nhìn cho rõ.
 
 ## 2. File raw OR-Library được ghi theo chiều "ô → gói"
 
-File gốc **không** lưu theo bảng ở trên (gói → ô nó phủ). Nó lưu **ngược lại**: với mỗi ô, liệt kê **những gói nào phủ ô đó**. Đây là quy ước riêng của định dạng OR-Library (mục 2 project-brief.md).
+File gốc **không** lưu theo bảng ở trên (gói → ô nó phủ). Nó lưu **ngược lại**: với mỗi ô, liệt kê **những gói nào phủ ô đó**. Đây là quy ước riêng của định dạng OR-Library.
 
 Nếu ghi ví dụ 3 ô/4 gói ở trên theo đúng kiểu file thật, nó sẽ là:
 
@@ -34,7 +34,7 @@ Nếu ghi ví dụ 3 ô/4 gói ở trên theo đúng kiểu file thật, nó s�
 
 So khớp lại với bảng ở mục 1: ô1 được phủ bởi S1, S3, S4 ✓ — đúng.
 
-**Lưu ý quan trọng (đã ghi ở mục 2 project-brief.md):**
+**Lưu ý quan trọng:**
 - Các số này **không bắt buộc mỗi dòng một ý nghĩa cố định** — file thật có thể ngắt dòng tùy ý giữa chừng một danh sách. Ví dụ dòng "3 1 3 4" ở trên có thể trong file thật bị tách thành 2 dòng "3 1" và "3 4". Vì vậy khi đọc file, **không đọc theo từng dòng**, mà phải đọc **toàn bộ file thành một dãy số liên tục**, rồi tự bóc tách theo đúng quy tắc (m, n, rồi n chi phí, rồi lặp qua từng ô: 1 số đếm + danh sách chỉ số).
 - Chỉ số gói là **1-indexed** (gói đầu tiên là số 1, không phải 0).
 
@@ -82,7 +82,7 @@ graph LR
     end
 ```
 
-Đây chính là lý do project-brief.md nhấn mạnh: **"code đọc dữ liệu phải đảo lại thành gói → ô"** — không phải chi tiết vặt, mà là bước bắt buộc để dữ liệu dùng được.
+Đây chính là lý do cần nhớ: **code đọc dữ liệu phải đảo lại thành gói → ô** — không phải chi tiết vặt, mà là bước bắt buộc để dữ liệu dùng được.
 
 ## 5. Toàn bộ pipeline chuyển đổi
 
@@ -113,3 +113,27 @@ Bất kể sau này lưu bằng JSON, pickle hay cấu trúc Python thuần, thu
 - **Đảo chiều bắt buộc**: raw là ô→gói, thuật toán cần gói→ô.
 - **1-indexed trong file**, cẩn thận khi chuyển sang mảng 0-indexed trong code.
 - `scp410.txt` và `scp510.txt` từng bị lệch vị trí khi tải (đã tải xong và nằm trong `data/raw/OR-Library/`, không ảnh hưởng bước parse này).
+
+## 8. Pha 2: định dạng instance RescueNet (multi-UAV)
+
+File `data/rescuenet/<tag>/instances/<id>.json`. Cùng tinh thần định dạng Pha 1 (gói → ô, 0-indexed), thêm trọng số ô và chủ sở hữu route:
+
+| Trường | Ý nghĩa |
+|---|---|
+| `m` | số ô có điểm rủi ro > 0 (ô điểm 0 bị loại khỏi universe) |
+| `n` | số route (gói) của cả K UAV |
+| `weights[i]` | điểm rủi ro của ô `i` (trung bình điểm pixel trong ô) |
+| `costs[j]`, `sets[j]` | chi phí và danh sách ô mà route `j` phủ (như Pha 1) |
+| `route_uav[j]` | UAV sở hữu route `j`; chi phí route `j` tính vào pin của UAV này |
+| `paths[j]` | đường đi `[hàng, cột]` trên lưới (chỉ để trực quan hóa/kiểm tra, thuật toán không dùng) |
+| `uav_starts`, `uav_share` | ô xuất phát của từng UAV; tỉ lệ chia pin `share_u` (tổng = 1) |
+| `cell_rc` | tọa độ lưới `[hàng, cột]` của từng ô trong universe |
+| `grid`, `table`, `image_id`, `tier` | lưới, bảng điểm, mã ảnh RescueNet, tầng hư hại |
+| `reference_cost` | `R` = chi phí nhỏ nhất để phủ mọi ô phủ được (ILP set cover, bỏ qua phân chia UAV) |
+
+Ngân sách UAV `u` ở mức `L%`: `B_u = floor(L × R × share_u / 100)` (`pipeline/rn/budgets.py`). Mục tiêu là **tổng điểm rủi ro** ô được phủ (mỗi ô tính một lần), nên trường `objective` trong kết quả Pha 2 là số thực này, khác Pha 1 (số ô). Mỗi UAV chọn nhiều route miễn tổng chi phí ≤ `B_u`.
+
+Trường kết quả Pha 2 (`data/rescuenet/<tag>/results/<thuật toán>/<id>_<mức>.json`): `instance, algorithm, mode ("budgeted_uav"), budget_level (số nguyên), budget_values (list B_u), status, objective, covered_cells, cost_per_uav, selected_packages, solve_time_seconds` (+ `time_limit_seconds` cho ILP, `params` cho heuristic).
+
+**Lưu ý đã biết:** (a) vài instance có ô không route nào phủ được (ví dụ ảnh 12078); (b) ở mức ngân sách thấp, một số UAV có pin nhỏ hơn route rẻ nhất của chính nó và không bay được route nào; (c) `reference_cost` dùng CBC với giới hạn 120 giây, nếu hết giờ thì `R` có thể chỉ là cận trên của chi phí phủ hết (chỉ ảnh hưởng thang ngân sách, dùng chung cho mọi thuật toán).
+

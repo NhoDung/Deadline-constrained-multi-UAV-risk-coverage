@@ -1,0 +1,33 @@
+{
+  "instance": "15586",
+  "algorithm": "proposed",
+  "mode": "budgeted_uav",
+  "budget_level": 75,
+  "budget_values": [
+    32,
+    31,
+    33,
+    30
+  ],
+  "status": "heuristic",
+  "objective": 48.407166666666676,
+  "covered_cells": 56,
+  "cost_per_uav": [
+    32,
+    26,
+    29,
+    30
+  ],
+  "selected_packages": [
+    364,
+    233,
+    438,
+    72,
+    104
+  ],
+  "solve_time_seconds": 0.014,
+  "params": {
+    "seeds": 20,
+    "ls_rounds": 50
+  }
+}

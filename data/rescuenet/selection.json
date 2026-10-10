@@ -1,0 +1,189 @@
+{
+ "seed": 2026,
+ "per_tier": 10,
+ "min_cells": 60,
+ "grid": 20,
+ "table": "default",
+ "images": [
+  {
+   "id": "11690",
+   "damage_frac": 0.0,
+   "nonzero_cells": 180,
+   "tier": "low"
+  },
+  {
+   "id": "12016",
+   "damage_frac": 0.0,
+   "nonzero_cells": 131,
+   "tier": "low"
+  },
+  {
+   "id": "12559",
+   "damage_frac": 0.0,
+   "nonzero_cells": 114,
+   "tier": "low"
+  },
+  {
+   "id": "13211",
+   "damage_frac": 0.0,
+   "nonzero_cells": 77,
+   "tier": "low"
+  },
+  {
+   "id": "13683",
+   "damage_frac": 0.0020115833333333335,
+   "nonzero_cells": 88,
+   "tier": "low"
+  },
+  {
+   "id": "14061",
+   "damage_frac": 0.0,
+   "nonzero_cells": 122,
+   "tier": "low"
+  },
+  {
+   "id": "14071",
+   "damage_frac": 0.0,
+   "nonzero_cells": 70,
+   "tier": "low"
+  },
+  {
+   "id": "14758",
+   "damage_frac": 0.0,
+   "nonzero_cells": 96,
+   "tier": "low"
+  },
+  {
+   "id": "15083",
+   "damage_frac": 0.0022883577286411296,
+   "nonzero_cells": 125,
+   "tier": "low"
+  },
+  {
+   "id": "15586",
+   "damage_frac": 0.0,
+   "nonzero_cells": 92,
+   "tier": "low"
+  },
+  {
+   "id": "11826",
+   "damage_frac": 0.061427833333333334,
+   "nonzero_cells": 94,
+   "tier": "mid"
+  },
+  {
+   "id": "13085",
+   "damage_frac": 0.09031458333333334,
+   "nonzero_cells": 274,
+   "tier": "mid"
+  },
+  {
+   "id": "13629",
+   "damage_frac": 0.05551958333333333,
+   "nonzero_cells": 191,
+   "tier": "mid"
+  },
+  {
+   "id": "14373",
+   "damage_frac": 0.08010695655559016,
+   "nonzero_cells": 124,
+   "tier": "mid"
+  },
+  {
+   "id": "14763",
+   "damage_frac": 0.05823458333333333,
+   "nonzero_cells": 89,
+   "tier": "mid"
+  },
+  {
+   "id": "14811",
+   "damage_frac": 0.08400791666666667,
+   "nonzero_cells": 147,
+   "tier": "mid"
+  },
+  {
+   "id": "14846",
+   "damage_frac": 0.08473516666666667,
+   "nonzero_cells": 171,
+   "tier": "mid"
+  },
+  {
+   "id": "14881",
+   "damage_frac": 0.055535666666666664,
+   "nonzero_cells": 166,
+   "tier": "mid"
+  },
+  {
+   "id": "15087",
+   "damage_frac": 0.04207266038617253,
+   "nonzero_cells": 125,
+   "tier": "mid"
+  },
+  {
+   "id": "15699",
+   "damage_frac": 0.06053758333333333,
+   "nonzero_cells": 68,
+   "tier": "mid"
+  },
+  {
+   "id": "11702",
+   "damage_frac": 0.21541641666666667,
+   "nonzero_cells": 243,
+   "tier": "high"
+  },
+  {
+   "id": "11714",
+   "damage_frac": 0.11765325,
+   "nonzero_cells": 193,
+   "tier": "high"
+  },
+  {
+   "id": "12078",
+   "damage_frac": 0.20815741666666668,
+   "nonzero_cells": 285,
+   "tier": "high"
+  },
+  {
+   "id": "12221",
+   "damage_frac": 0.11596116666666667,
+   "nonzero_cells": 164,
+   "tier": "high"
+  },
+  {
+   "id": "12437",
+   "damage_frac": 0.2729420833333333,
+   "nonzero_cells": 304,
+   "tier": "high"
+  },
+  {
+   "id": "12924",
+   "damage_frac": 0.17723783333333334,
+   "nonzero_cells": 123,
+   "tier": "high"
+  },
+  {
+   "id": "13520",
+   "damage_frac": 0.16685025,
+   "nonzero_cells": 107,
+   "tier": "high"
+  },
+  {
+   "id": "13706",
+   "damage_frac": 0.13349733333333333,
+   "nonzero_cells": 147,
+   "tier": "high"
+  },
+  {
+   "id": "13743",
+   "damage_frac": 0.09770525,
+   "nonzero_cells": 157,
+   "tier": "high"
+  },
+  {
+   "id": "14935",
+   "damage_frac": 0.2833523333333333,
+   "nonzero_cells": 228,
+   "tier": "high"
+  }
+ ]
+}
