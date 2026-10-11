@@ -18,6 +18,8 @@ ALIASES = {
     "pipeline.validate_uav": "10_validate_uav.py",
     "pipeline.summarize_rn": "11_summarize_rn.py",
     "pipeline.timing_rn": "12_timing_rn.py",
+    "pipeline.summarize_phase1": "13_summarize_phase1.py",
+    "pipeline.plots_paper": "14_plots_paper.py",
 }
 
 for module_name, file_name in ALIASES.items():
