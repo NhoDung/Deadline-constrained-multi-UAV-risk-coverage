@@ -39,16 +39,18 @@ Bài báo này tổng kết bài tập lớn môn Design and Analysis of Algorit
 điều phối $K=4$ máy bay không người lái (UAV) trên một bản đồ rủi ro dạng lưới, trong đó
 mỗi UAV có ngân sách pin riêng và lượng rủi ro quan sát được cần đạt lớn nhất. Về bản chất,
 đây là biến thể nhiều ngân sách của bài toán Budgeted Maximum Coverage, một bài toán
-NP-hard. Cả bộ thực nghiệm đều xây từ RescueNet, bộ ảnh UAV chụp sau bão Michael kèm mask
+NP-hard. Pha 1 dùng OR-Library; Pha 2 xây từ RescueNet, bộ ảnh UAV chụp sau bão Michael kèm mask
 phân đoạn 11 lớp: mask được cắt thành lưới $20\times20$, rồi nhóm sinh ra route bay và ngân
-sách pin cho từng UAV từ chính lưới đó. Nhóm cài đặt greedy thuần, greedy tỉ lệ kết hợp seed
+sách pin cho từng UAV từ chính lưới đó. Nhóm cài đặt greedy thuần, greedy tỉ lệ kết hợp khởi tạo đa điểm
 và tìm kiếm cục bộ, cộng thêm một thuật toán đề xuất có xét pin riêng từng UAV; mọi kết quả
 đều đối chứng với quy hoạch số nguyên (ILP) và được validator độc lập tính lại từ đầu. Trên
-45 thực thể OR-Library, greedy tỉ lệ có seed và tìm kiếm cục bộ đạt 99,4--99,7\,\% nghiệm
+45 thực thể OR-Library, greedy tỉ lệ có khởi tạo đa điểm và tìm kiếm cục bộ đạt 99,4--99,7\,\% nghiệm
 tối ưu, trong khi greedy thuần chỉ đạt 40,8--43,5\,\%. Trên 350 ảnh RescueNet nhân 4 mức
 ngân sách, thuật toán đề xuất đạt trung bình 0,971--0,984 lần nghiệm ILP, hơn baseline ngân
 sách chung từ 4,3 đến 6,2 điểm phần trăm (Wilcoxon ghép cặp cho $p < 10^{-44}$ ở cả bốn
-mức). Mỗi lần giải chỉ mất khoảng 46\,ms, trong khi ILP cần từ 3,2 đến 66,2\,giây. Bài báo
+mức). Mỗi lần giải của thuật toán đề xuất mất khoảng 46\,ms; ILP với giới hạn 120\,giây
+có thời gian chạy trung bình 3,2--66,2\,giây theo mức ngân sách, nhưng 28\,\% số ca
+vẫn chưa chứng minh được tối ưu khi hết giờ. Bài báo
 cũng có ablation từng thành phần, khảo sát độ nhạy và phân tích thời gian chạy.
 \end{abstract}
 
@@ -59,9 +61,10 @@ RescueNet, quy hoạch số nguyên
 
 \section{Giới thiệu}
 % Nguồn: README.md "Mô tả chung" + "Bài toán và khái niệm nền"; docs/mo-hinh-du-lieu.md
-Đề tài là bài tập lớn môn Design and Analysis of Algorithms, và toàn bộ dữ liệu của nhóm
-xoay quanh một bộ ảnh thật: RescueNet~\cite{rescuenet}, gồm 449 ảnh UAV chụp sau bão Michael
-(10/2018), mỗi ảnh kèm mask phân đoạn hư hại 11 lớp. Bài tập xét trường hợp sử dụng bốn UAV để quan sát các khu vực có mức độ hư hại khác nhau. Do ngân sách pin của từng UAV bị giới hạn, nhóm không đặt mục tiêu quan sát toàn bộ khu vực. Thay vào đó, bài toán cần lựa chọn các route sao cho tổng điểm rủi ro được phủ là lớn nhất, đồng thời không vượt quá ngân sách pin của mỗi UAV.
+Đề tài là bài tập lớn môn Design and Analysis of Algorithms. Pha 1 dùng các thực thể
+OR-Library, còn Pha 2 dựa trên RescueNet~\cite{rescuenet}: bộ dữ liệu gồm 4494 ảnh UAV
+chụp sau bão Michael (10/2018), trong đó nhóm dùng 449 ảnh thuộc tập validation.
+Mask có 11 mã nhãn (0--10, gồm nền và 10 lớp đối tượng). Bài tập xét trường hợp sử dụng bốn UAV để quan sát các khu vực có mức độ hư hại khác nhau. Do ngân sách pin của từng UAV bị giới hạn, nhóm không đặt mục tiêu quan sát toàn bộ khu vực. Thay vào đó, bài toán cần lựa chọn các route sao cho tổng điểm rủi ro được phủ là lớn nhất, đồng thời không vượt quá ngân sách pin của mỗi UAV.
 
 Để thuật toán giải được, nhóm cắt mỗi ảnh thành lưới $20\times20$ ô; ô có hư hại nặng
 nhận điểm rủi ro cao, tính thẳng từ mask. Mỗi UAV có một ngân sách pin riêng và đi được một
@@ -88,7 +91,7 @@ liệu RescueNet~\cite{rescuenet} thành bản đồ rủi ro dạng lưới, si
 cho $K=4$ UAV, cho ra 350 thực thể (instance) đủ điều kiện trên tập validation. Toàn bộ quy
 trình có mã nguồn, kiểm thử (82 test pytest) và tài liệu trong repo của nhóm.
 \item Thuật toán đề xuất: greedy tỉ lệ lazy (kỹ thuật CELF~\cite{leskovec2007}) xét ngân
-sách riêng từng UAV, kết hợp nghiệm gói đơn tốt nhất, đa hóa bằng seed và tìm kiếm cục bộ
+sách riêng từng UAV, kết hợp nghiệm gói đơn tốt nhất, khởi tạo đa điểm và tìm kiếm cục bộ
 drop-and-refill.
 \item Đánh giá đối chứng với ILP: 45 thực thể OR-Library ở pha 1 và 1400 lần giải trên 350
 ảnh RescueNet ở pha 2; kết quả được bộ validator độc lập tự tính lại từ dữ liệu đầu vào,
@@ -97,6 +100,12 @@ không dùng số liệu thuật toán tự báo cáo.
 với bảng điểm rủi ro và kích thước lưới, cùng phân tích thời gian chạy lý thuyết và đo
 thực tế.
 \end{itemize}
+
+\textbf{Hướng mở rộng Pha 2.} Nhóm chọn hướng greedy thích nghi có tham chiếu lý thuyết
+xấp xỉ (\emph{greedy adaptive / approximation-aware heuristic}): cập nhật lợi ích biên
+theo phần rủi ro chưa được phủ và kiểm tra pin riêng của từng UAV ở mỗi bước chọn route.
+Thiết kế tham khảo trường hợp một ngân sách, nhưng không suy ra bảo đảm xấp xỉ cho mô hình
+nhiều ngân sách; chất lượng được đánh giá thực nghiệm bằng đối chứng ILP.
 
 \textbf{Phạm vi mô hình.} Đề tài gốc nêu ràng buộc deadline; trong khuôn khổ này, ràng buộc
 thời gian được mô hình hóa dưới dạng ngân sách năng lượng (chi phí của route tương ứng thời
@@ -119,9 +128,12 @@ nhóm chưa kiểm chứng được cận xấp xỉ nào trong tài liệu cho 
 không khẳng định thuật toán ở mục~\ref{sec:algorithm} có bảo đảm lý thuyết; đánh giá thuần
 thực nghiệm so với nghiệm ILP.
 
-\textbf{Phạm vi khảo sát.} Bài báo tiếp cận đề tài từ góc độ tối ưu hóa combinatorial. Các
-khía cạnh planning đường bay vật lý (động học, tránh va chạm, địa hình) và khảo sát hệ thống
-tài liệu coverage path planning cho UAV nằm ngoài phạm vi của bài tập lớn.
+\textbf{Mạng đa UAV trong giám sát thiên tai.} Chandran và Vipin~\cite{chandran2024}
+khảo sát kiến trúc mạng, phối hợp, định tuyến và bảo mật cho các hệ đa UAV giám sát thiên
+tai. Công trình này cung cấp bối cảnh ứng dụng cho đề tài. Trong phạm vi bài tập, nhóm
+tập trung vào tối ưu hóa tổ hợp: chọn route để tối đa hóa rủi ro được phủ dưới ràng buộc
+pin. Mô phỏng mạng truyền thông và planning đường bay vật lý (động học, tránh va chạm,
+địa hình) nằm ngoài phạm vi thực nghiệm.
 
 \textbf{Bộ dữ liệu RescueNet.} Rahnemoonfar, Chowdhury và Murphy~\cite{rescuenet} công bố bộ
 dữ liệu ảnh UAV độ phân giải cao chụp sau bão Michael (10/2018) kèm mask phân đoạn 11 lớp
@@ -167,8 +179,12 @@ rủi ro của một ô lấy trung bình điểm rủi ro của các pixel mask
 nhãn $\to$ điểm rủi ro đặt theo nguyên tắc: hư hại nặng thì điểm cao, ví dụ
 \emph{Building--Total-Destruction} hay \emph{Road--Blocked}. Từ lưới, pipeline sinh các
 route tự tránh (self-avoiding) xuất phát từ các điểm cố định của $K$ UAV, lệch về ô có rủi ro cao. Chi phí route tỷ lệ độ dài. Ngân sách của UAV $u$ là $B_u = \lfloor \text{mức\%} \times R \times s_u \rfloor$,
-trong đó $s_u$ là hệ số riêng của từng UAV, ngẫu nhiên trong khoảng $\pm 20\,\%$ quanh
-giá trị bằng nhau (chốt trong tài liệu thiết kế kèm mã nguồn). Lý do của từng lựa chọn (kích thước lưới, bảng điểm, cách chọn
+trong đó $s_u$ là tỉ phần pin của từng UAV, với $\sum_u s_u=1$.
+Để tạo chênh lệch pin, sinh hệ số thô $a_u \sim U[0{,}8,1{,}2]$ (dao động
+$\pm 20\,\%$ quanh 1) rồi chuẩn hóa $s_u=a_u/\sum_v a_v$.
+Route cũng được sinh ngẫu nhiên; hạt giống sinh route là mã ảnh, còn hạt giống sinh
+hệ số pin là mã ảnh cộng 1. Các giá trị được cố định trong thực thể và dùng chung cho
+mọi thuật toán. Lý do của từng lựa chọn (kích thước lưới, bảng điểm, cách chọn
 ảnh, công thức ngân sách) nằm trong tài liệu thiết kế kèm mã nguồn
 (\texttt{docs/phase2-rescuenet-thiet-ke.md}). Không phải ảnh nào cũng dùng được: chỉ các
 ảnh có ít nhất 60 ô điểm dương được giữ lại (350/449 ảnh validation); 99 ảnh bị loại vì quá
@@ -189,21 +205,27 @@ làm mốc so sánh.
 \subsection{Thuật toán đề xuất}
 Thuật toán đề xuất, nhóm gọi tắt là \emph{proposed}, ghép bốn thành phần:
 \begin{enumerate}
-\item \textbf{Greedy tỉ lệ lazy theo từng UAV:} mỗi bước, với UAV $u$ còn dư pin, chọn route
-tối đa tỉ lệ $\lvert S_j \setminus \text{đã phủ} \rvert / c_j$ trong các route của $u$. Để
-đỡ tốn tính toán, ta dùng kỹ thuật lazy evaluation (CELF~\cite{leskovec2007}): danh sách
-ứng viên được giữ theo giá trị cũ và chỉ tính lại khi giá trị cũ không còn đứng đầu. Số phép
+\item \textbf{Greedy tỉ lệ lazy theo từng UAV:} mỗi bước chọn route
+tối đa tỉ lệ lợi ích biên trên chi phí $\Delta f(j\mid X)/c_j$ trong các route khả thi,
+với $\Delta f(j\mid X)=\sum_{i\in S_j\setminus\bigcup_{k\in X}S_k}w_i$. Để
+đỡ tốn tính toán, ta dùng kỹ thuật lazy evaluation (CELF~\cite{leskovec2007}): giữ lợi ích
+biên cũ làm cận trên trong hàng đợi ưu tiên, chỉ tính lại khi ứng viên lên đầu hàng đợi. Số phép
 đánh giá nhờ vậy giảm mạnh.
 \item \textbf{Gói đơn tốt nhất:} so sánh nghiệm greedy với route đơn có $f(\{j\})$ lớn nhất,
 lấy giá trị cao hơn (bố cục của Khuller--Moss--Naor~\cite{khuller1999}).
-\item \textbf{Đa hóa bằng seed:} khởi tạo thứ tự ưu tiên của các route theo nhiều tiêu chí
-(20 route phủ nhiều nhất, 20 route tỉ lệ tốt nhất, ...) và chạy lại greedy từ mỗi seed,
-giữ nghiệm tốt nhất.
+\item \textbf{Khởi tạo đa điểm (multi-start):} lấy hợp của $q$ route có tổng điểm rủi ro
+cao nhất và $q$ route có tỉ lệ điểm rủi ro/chi phí tốt nhất, chỉ xét route khả thi.
+Với mỗi route trong hợp này, chọn route đó trước rồi chạy greedy để bổ sung; giữ nghiệm
+tốt nhất. Mặc định $q=20$, tương ứng tối đa 40 khởi tạo sau khi loại trùng.
 \item \textbf{Tìm kiếm cục bộ drop-and-refill:} thử bỏ từng route đã chọn và lấp chỗ trống
 bằng greedy tỉ lệ, lặp đến khi không cải thiện.
 \end{enumerate}
-Mọi bước đều kiểm tra ràng buộc pin của từng UAV. Với cấu hình mặc định, thuật toán
-deterministic. Phân tích Big-O nằm trong tài liệu kỹ thuật của nhóm
+Mọi bước đều kiểm tra ràng buộc pin của từng UAV. Trên một thực thể cố định, cả
+\emph{proposed} và \emph{naive} đều tất định (deterministic). Tham số \texttt{seeds}
+trong mã nguồn và chữ ``seed'' trên các hình chỉ số route khởi tạo theo mỗi tiêu chí
+($q$), không phải hạt giống ngẫu nhiên. Thực nghiệm chưa khảo sát 20--30 hạt giống sinh
+thực thể độc lập; cỡ mẫu thống kê là số ảnh, không phải số khởi tạo.
+Phân tích Big-O nằm trong tài liệu kỹ thuật của nhóm
 (\texttt{docs/phase2-thoi-gian-chay.md}); mục~\ref{sec:results} tóm tắt số đo thời gian.
 
 \section{Thiết lập thực nghiệm}
@@ -212,7 +234,7 @@ deterministic. Phân tích Big-O nằm trong tài liệu kỹ thuật của nhó
 \textbf{Pha 1 (OR-Library, một ngân sách).} 45 thực thể Set Covering (bộ 4, 5, 6, A--D)
 lấy từ OR-Library~\cite{beasley1990}. Ngân sách đặt theo nghiệm tối ưu phủ trọn OPT:
 $B = \lfloor \text{mức\%} \times \mathrm{OPT} \rfloor$ với mức 75/50/25\,\%. Bảng OPT lấy từ
-Ohlsson và cộng sự~\cite{ohlsson1999} (số liệu gốc Beasley~\cite{beasley1990}); nhóm đã tái
+Ohlsson và cộng sự~\cite{ohlsson1999} (số liệu gốc Beasley~\cite{beasley1987}); nhóm đã tái
 lập lại cả 45 giá trị bằng ILP và khớp hết. Mỗi cặp (thực thể, mức) tính là một lần giải,
 vậy mỗi heuristic có 135 lần giải.
 
@@ -239,7 +261,7 @@ với mã khác 0. Lần chạy 350 ảnh: 8400 file kết quả, không có l�
 \includegraphics[width=\textwidth]{h2_example_instance.pdf}
 \caption{Minh họa một thực thể trên ảnh tầng hư hại cao (ảnh 11702). Trái: bản đồ
 rủi ro $20\times20$ trích từ mask RescueNet (nhãn là dữ liệu thật). Phải: các route
-của $K=4$ UAV (★: điểm xuất phát ở 4 góc) mà thuật toán đề xuất chọn ở mức ngân
+của $K=4$ UAV (dấu sao $\star$: điểm xuất phát ở 4 góc) mà thuật toán đề xuất chọn ở mức ngân
 sách 100\,\%, phủ tập trung lên vùng rủi ro cao; lưới, route và pin là mô hình
 tổng hợp của nhóm.}
 \label{fig:example}
@@ -257,14 +279,16 @@ tổng hợp của nhóm.}
 \includegraphics[width=\columnwidth]{h5_phase1_results.pdf}
 \caption{Pha 1 (OR-Library, 45 thực thể): tỉ lệ so với nghiệm ILP tối ưu
 (điểm: trung bình, gạch dọc: khoảng min--max). Greedy thuần (cam) đạt trung bình
-chỉ 40,8--43,5\,\%; greedy tỉ lệ + seed + tìm kiếm cục bộ (xanh) đạt
+chỉ 40,8--43,5\,\%; greedy tỉ lệ + khởi tạo đa điểm + tìm kiếm cục bộ (xanh) đạt
 99,4--99,7\,\%.}
 \label{fig:phase1}
 \end{figure}
-Bảng~\ref{tab:phase1} và hình~\ref{fig:phase1} tóm tắt 135 lần giải mỗi heuristic. Cả 45 ca
-ILP đều đạt \texttt{optimal}. Greedy thuần chỉ đạt trung bình 40,8--43,5\,\% nghiệm tối ưu;
+Bảng~\ref{tab:phase1} và hình~\ref{fig:phase1} tóm tắt 135 lần giải mỗi heuristic.
+Cả 135 lần giải ILP có ngân sách (45 thực thể $\times$ 3 mức) đều đạt
+\texttt{optimal}; 45 lần giải ILP phủ trọn dùng để kiểm tra OPT cũng đều tối ưu.
+Greedy thuần chỉ đạt trung bình 40,8--43,5\,\% nghiệm tối ưu;
 phân tích ở mục~\ref{sec:algorithm} đã báo trước điều này: greedy theo số ô mới không phù
-hợp với bài toán có chi phí. Thuật toán greedy tỉ lệ kết hợp seed và tìm kiếm cục bộ thì
+hợp với bài toán có chi phí. Thuật toán greedy tỉ lệ kết hợp khởi tạo đa điểm và tìm kiếm cục bộ thì
 khác hẳn: 99,4--99,7\,\% trung bình, thấp nhất 98,5\,\%, thời gian không quá 64\,ms mỗi lần
 giải.
 
@@ -277,9 +301,9 @@ giải.
  & 75\,\% & 50\,\% & 25\,\% \\
 \midrule
 Greedy thuần & 0{,}435 & 0{,}410 & 0{,}408 \\
-Greedy tỉ lệ + seed + LS & \textbf{0{,}994} & \textbf{0{,}994} & \textbf{0{,}997} \\
+Greedy tỉ lệ + đa điểm + LS & \textbf{0{,}994} & \textbf{0{,}994} & \textbf{0{,}997} \\
 \midrule
-\multicolumn{4}{l}{\footnotesize Thời gian TB: greedy thuần 1,6--4,5\,ms; greedy+seed+LS 26--64\,ms.}\\
+\multicolumn{4}{l}{\footnotesize Thời gian TB: greedy thuần 1,6--4,5\,ms; tỉ lệ+đa điểm+LS 26--64\,ms.}\\
 \multicolumn{4}{l}{\footnotesize Tỉ lệ $=$ objective heuristic / objective ILP (n $=$ 45 mỗi ô).}\\
 \bottomrule
 \end{tabular}
@@ -343,8 +367,8 @@ Mức & Thắng/hòa/thua & $p$ (Wilcoxon) \\
 
 \subsection{Ablation}
 Bảng~\ref{tab:ablation} bỏ từng thành phần của thuật toán đề xuất, trên cùng 350 ảnh. Bỏ
-seed mất chất lượng nhiều hơn bỏ tìm kiếm cục bộ. Riêng việc xét pin từng UAV khi chọn
-(ratio-only) chỉ hơn naive 0,9--1,4 điểm phần trăm. Nghĩa là phần lớn cải thiện đến từ seed
+khởi tạo đa điểm mất chất lượng nhiều hơn bỏ tìm kiếm cục bộ. Riêng việc xét pin từng UAV khi chọn
+(ratio-only) chỉ hơn naive 0,9--1,4 điểm phần trăm. Nghĩa là phần lớn cải thiện đến từ khởi tạo đa điểm
 và tìm kiếm cục bộ, không phải từ việc đổi cách xét ngân sách. Mọi khác biệt đều có
 $p < 10^{-18}$ (Wilcoxon).
 
@@ -357,7 +381,7 @@ $p < 10^{-18}$ (Wilcoxon).
 Biến thể & 25\,\% & 50\,\% & 75\,\% & 100\,\% \\
 \midrule
 Chỉ ratio per-UAV & 0{,}946 & 0{,}919 & 0{,}930 & 0{,}955 \\
-Không seed & 0{,}959 & 0{,}937 & 0{,}945 & 0{,}967 \\
+Không đa điểm & 0{,}959 & 0{,}937 & 0{,}945 & 0{,}967 \\
 Không tìm kiếm cục bộ & 0{,}979 & 0{,}963 & 0{,}967 & 0{,}981 \\
 \textbf{Đầy đủ (proposed)} & \textbf{0{,}984} & \textbf{0{,}971} & \textbf{0{,}973} & \textbf{0{,}984} \\
 \midrule
@@ -375,17 +399,30 @@ xảy ra đúng ở các ca đó.
 
 \subsection{Thời gian chạy}
 Số liệu ở bảng~\ref{tab:time}: thuật toán đề xuất mất trung bình 46\,ms mỗi lần giải, tổng
-khoảng 65 giây cho cả 1400 lần. ILP thì khác hẳn: 3,2--66,2\,giây trung bình tùy mức ngân
-sách, tổng 16,7 giờ CPU. Chất lượng theo số seed (hình~\ref{fig:seeds}) bão hòa rất nhanh:
-5 seed đã cho phần lớn cải thiện; tăng từ 20 lên 80 seed chỉ thêm khoảng 0,3--0,5 điểm phần
-trăm, đổi lại tốn thêm 87\,ms. Mặc định 20 seed là điểm thỏa hiệp, chưa được tối ưu hóa:
-giảm còn 10 seed bớt khoảng 41\,\% thời gian, mất 0,2--0,6 điểm. Thời gian một lần giải tăng
-gần tuyến tính theo số route $n$ (hệ số mũ log--log 1,06) và gần như không phụ thuộc số ô
-$m$ (hình~\ref{fig:scale}).
+khoảng 65 giây cho cả 1400 lần. Với giới hạn 120\,giây mỗi ca, ILP có thời gian chạy trung
+bình 3,2--66,2\,giây tùy mức ngân sách, tổng thời gian các lượt giải khoảng 16,7 giờ.
+Các trung bình này tính cả những lượt bị dừng do hết giờ, nên không phải thời gian
+trung bình để chứng minh tối ưu. Số ca \texttt{best-known} theo mức 25/50/75/100\,\%
+lần lượt là 6/99/132/156. Riêng mức 100\,\%, 156/350 ca chưa chứng minh tối ưu khi hết giờ;
+194 ca tối ưu còn lại có thời gian trung bình 22,9\,giây.
+
+Trên bộ thử 30 ảnh (\texttt{g20\_default}), 23 ca chưa tối ưu ở lượt 120\,giây được chạy
+lại với giới hạn 600\,giây; sau đó vẫn còn 20/120 ca \texttt{best-known}.
+Ví dụ, ảnh 11690 ở mức 100\,\% đạt tối ưu sau 286\,giây, trong khi ảnh 12437 ở mức
+75\,\% và ảnh 13085 ở mức 100\,\% vẫn chưa chứng minh tối ưu sau 600\,giây.
+Lượt chạy lại này không áp dụng cho bộ 350 ảnh và không được gộp vào bảng~\ref{tab:time}.
+
+Khảo sát số khởi tạo trên 30 ảnh (hình~\ref{fig:seeds}) cho thấy lợi ích giảm dần:
+$q=5$ đã cho phần lớn cải thiện; tăng $q$ từ 20 lên 80 chỉ thêm khoảng 0,3--0,5 điểm phần
+trăm, đổi lại tốn thêm 87\,ms. Mặc định $q=20$ là điểm thỏa hiệp, chưa được tối ưu hóa:
+giảm còn $q=10$ bớt khoảng 41\,\% thời gian, mất 0,2--0,6 điểm. Thời gian một lần giải tăng
+gần tuyến tính theo số route $n$ (hệ số mũ log--log 1,06) và thay đổi ít theo số ô
+$m$ khi giữ $n$ cố định trong phạm vi khảo sát (hình~\ref{fig:scale}).
 
 \begin{table}[!t]
 \centering
-\caption{Thời gian trung bình mỗi lần giải, lần chạy 350 ảnh (1400 ca/thuật toán).}
+\caption{Thời gian mỗi lần giải trên 350 ảnh (1400 ca/thuật toán).
+ILP giới hạn 120\,s; trung bình bao gồm các lượt chưa chứng minh tối ưu.}
 \label{tab:time}
 \begin{tabular}{lcc}
 \toprule
@@ -393,7 +430,12 @@ Thuật toán & TB & Lớn nhất \\
 \midrule
 Proposed & 46{,}4\,ms & 245\,ms \\
 Naive & 66{,}5\,ms & 294\,ms \\
-ILP (theo mức 25/50/75/100\,\%) & 3,2 / 42,2 / 60,0 / 66,2\,s & $\ge$ 120\,s (giới hạn) \\
+ILP, mức 25\,\% & 3{,}2\,s & 120{,}2\,s \\
+ILP, mức 50\,\% & 42{,}2\,s & 120{,}3\,s \\
+ILP, mức 75\,\% & 60{,}0\,s & 120{,}2\,s \\
+ILP, mức 100\,\% & 66{,}2\,s & 120{,}3\,s \\
+\midrule
+\multicolumn{3}{l}{\footnotesize Thời gian đo gồm chi phí gọi và thu kết quả solver.}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -401,9 +443,10 @@ ILP (theo mức 25/50/75/100\,\%) & 3,2 / 42,2 / 60,0 / 66,2\,s & $\ge$ 120\,s (
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{h4_seeds_quality_time.pdf}
-\caption{Chất lượng--thời gian theo số seed (30 ảnh, trung bình). Trên: thời gian
-tăng gần tuyến tính theo số seed. Dưới: 5 seed đã cho phần lớn cải thiện; từ 20 lên
-80 seed tỉ lệ chỉ thêm khoảng 0,3--0,5 điểm phần trăm.}
+\caption{Chất lượng--thời gian theo tham số khởi tạo đa điểm $q$ (30 ảnh, trung bình;
+``Số seed'' trên trục là $q$, số route khởi tạo theo mỗi tiêu chí).
+Trên: thời gian tăng gần tuyến tính theo $q$. Dưới: $q=5$ đã cho phần lớn cải thiện;
+từ $q=20$ lên 80, tỉ lệ chỉ thêm khoảng 0,3--0,5 điểm phần trăm.}
 \label{fig:seeds}
 \end{figure}
 
@@ -411,8 +454,8 @@ tăng gần tuyến tính theo số seed. Dưới: 5 seed đã cho phần lớn 
 \centering
 \includegraphics[width=\columnwidth]{h6_scale.pdf}
 \caption{Thời gian một lần giải của thuật toán đề xuất theo quy mô thực thể
-(thang log--log): tăng theo số route $n$ với $m$ cố định, gần phẳng theo số ô
-$m$ với $n$ cố định.}
+(thang log--log): tăng theo số route $n$ với $m$ cố định, thay đổi ít theo số ô
+$m$ với $n$ cố định trong phạm vi khảo sát.}
 \label{fig:scale}
 \end{figure}
 
@@ -431,9 +474,12 @@ tập trung ở $m$ lớn và mức ngân sách cao; tỉ lệ ở các ca đó 
 99 ảnh bị loại. Chỉ dùng tập validation, chưa có tập kiểm định độc lập.
 \item \textbf{Bảo đảm lý thuyết.} Cận $\tfrac12(1-1/e)$ chỉ đúng cho một ngân sách; trường
 hợp nhiều ngân sách chưa có bảo đảm được kiểm chứng trong khuôn khổ này.
-\item \textbf{Sensitivity} (ablation chi tiết, độ nhạy) chỉ chạy trên 30 ảnh phân tầng;
-kết quả chính 350 ảnh cho chênh lệch tối đa $\approx$ 2 điểm phần trăm so với lần chạy 30
-ảnh, kết luận không đổi.
+\item \textbf{Phạm vi khảo sát bổ sung.} Ablation từng thành phần ở
+bảng~\ref{tab:ablation} chạy trên 350 ảnh, ngoài ra có bộ thử 30 ảnh. Khảo sát độ nhạy
+và số khởi tạo đa điểm chỉ chạy trên 30 ảnh phân tầng. Kết quả chính trên 350 ảnh
+chênh tối đa khoảng 2 điểm phần trăm so với bộ thử 30 ảnh, kết luận so sánh trung bình
+giữa proposed và naive không đổi. Chưa đánh giá độ ổn định qua nhiều hạt giống sinh
+route và chia pin độc lập.
 \item \textbf{Chi phí tham chiếu $R$} có thể là cận trên khi CBC hết giờ; chỉ ảnh hưởng
 thang ngân sách, dùng chung cho mọi thuật toán.
 \end{enumerate}
@@ -441,18 +487,26 @@ thang ngân sách, dùng chung cho mọi thuật toán.
 \section{Kết luận}
 \label{sec:conclusion}
 Bài báo đi hết quy trình, từ ảnh hư hại thật của RescueNet đến bộ thực thể tối ưu hóa
-combinatorial. Thuật toán đề xuất là greedy tỉ lệ lazy theo ngân sách từng UAV, kèm seed và
+combinatorial. Thuật toán đề xuất là greedy tỉ lệ lazy theo ngân sách từng UAV, kèm khởi tạo đa điểm và
 tìm kiếm cục bộ; đánh giá đối chứng bằng ILP trên 45 thực thể OR-Library và 350 ảnh
 RescueNet. Kết quả: 99,4--99,7\,\% nghiệm ILP ở một ngân sách, 97,1--98,4\,\% ở nhiều ngân
-sách; hơn baseline 4,3--6,2 điểm phần trăm. Mỗi lần giải chỉ tốn 46\,ms, so với
-3,2--66,2\,giây của ILP. Còn nhiều việc để làm tiếp: mô hình hóa deadline thời gian cho từng
-ô, tìm bảo đảm xấp xỉ cho trường hợp nhiều ngân sách, kiểm định trên tập ảnh độc lập, và
-thêm các metaheuristic (GRASP, simulated annealing) cho Pha 1.
+sách; các tỉ lệ ở Pha 2 gồm cả ca ILP chỉ đạt best-known. Thuật toán đề xuất hơn baseline
+4,3--6,2 điểm phần trăm và mất trung bình 46\,ms mỗi lần giải. ILP bị giới hạn ở 120\,giây
+và vẫn để lại 28\,\% số ca chưa chứng minh tối ưu; thời gian trung bình 3,2--66,2\,giây
+không thể diễn giải là thời gian giải đến tối ưu. Các hướng phát triển gồm mô hình hóa
+deadline riêng cho từng ô, tìm bảo đảm xấp xỉ cho nhiều ngân sách, kiểm định trên tập ảnh
+độc lập và nhiều hạt giống sinh thực thể, bổ sung mô hình online khi rủi ro thay đổi
+hoặc robust khi chi phí pin bất định, và thử metaheuristic (GRASP, simulated annealing)
+cho Pha 1.
 
-\begin{thebibliography}{9}
+\begin{thebibliography}{11}
 
 \bibitem{beasley1990} J.~E. Beasley, ``OR-Library: Distributing test problems by electronic
 journal,'' \emph{Journal of the Operational Research Society}, vol.~41, no.~11, pp.~1069--1072, 1990.
+
+\bibitem{beasley1987} J.~E. Beasley, ``An algorithm for set covering problem,''
+\emph{European Journal of Operational Research}, vol.~31, no.~1, pp.~85--93, 1987,
+doi: \href{https://doi.org/10.1016/0377-2217(87)90141-X}{10.1016/0377-2217(87)90141-X}.
 
 \bibitem{nemhauser1978} G.~L. Nemhauser, L.~A. Wolsey, và M.~L. Fisher, ``An analysis of
 approximations for maximizing submodular set functions---I,'' \emph{Mathematical Programming},
@@ -465,12 +519,19 @@ problem,'' \emph{Information Processing Letters}, vol.~70, no.~1, pp.~39--45, 19
 subject to a knapsack constraint,'' \emph{Operations Research Letters}, vol.~32, no.~1,
 pp.~41--43, 2004.
 
-\bibitem{ohlsson1999} M.~Ohlsson, C.~Peterson, và B.~Söderberg, trang C2, arXiv:cs/9902025,
-1999.
+\bibitem{ohlsson1999} M.~Ohlsson, C.~Peterson, và B.~Söderberg, ``An efficient mean field
+approach to the set covering problem,'' arXiv:cs/9902025, 1999, phụ lục C, bảng C2.
+[Trực tuyến]. \url{https://arxiv.org/abs/cs/9902025}.
 
-\bibitem{rescuenet} M.~Rahnemoonfar, T.~Chowdhury, và R.~Murphy, ``RescueNet: A high resolution
-post-disaster damage assessment dataset for vision-based emergency response,''
-\emph{Scientific Data}, vol.~10, art.~913, 2023.
+\bibitem{rescuenet} M.~Rahnemoonfar, T.~Chowdhury, và R.~Murphy, ``RescueNet: A High
+Resolution UAV Semantic Segmentation Dataset for Natural Disaster Damage Assessment,''
+\emph{Scientific Data}, vol.~10, art.~913, 2023,
+doi: \href{https://doi.org/10.1038/s41597-023-02799-4}{10.1038/s41597-023-02799-4}.
+
+\bibitem{chandran2024} I.~Chandran và K.~Vipin, ``Multi-UAV networks for disaster monitoring:
+challenges and opportunities from a network perspective,'' \emph{Drone Systems and
+Applications}, vol.~12, pp.~1--28, 2024,
+doi: \href{https://doi.org/10.1139/dsa-2023-0079}{10.1139/dsa-2023-0079}.
 
 \bibitem{leskovec2007} J.~Leskovec, A.~Krause, C.~Guestrin, C.~Faloutsos, J.~VanBriesen, và
 N.~Glance, ``Cost-effective outbreak detection in networks,'' trong \emph{Proc. ACM KDD},
