@@ -25,7 +25,7 @@ Project nghiên cứu bài toán **Maximum Risk Coverage**, thuộc lớp bài t
 
 | Thư mục / file | Nội dung |
 |---|---|
-| `pipeline/` | Các bước chạy, đánh số theo thứ tự. **Pha 1:** `01_download_orlib`, `02_convert_to_input`, `03_solve_ilp`, `04_greedy_pure`, `05_validate_solution`, `06_greedy_ls`; `opt_reference.py` là bảng OPT dùng chung. **Pha 2:** `07_rn_prepare` (chọn ảnh, sinh instance), `08_ilp_uav`, `09_greedy_uav` (thuật toán đề xuất `proposed` và baseline `naive`), `10_validate_uav`, `11_summarize_rn`, `12_timing_rn` |
+| `pipeline/` | Các bước chạy, đánh số theo thứ tự. **Pha 1:** `01_download_orlib`, `02_convert_to_input`, `03_solve_ilp`, `04_greedy_pure`, `05_validate_solution`, `06_greedy_ls`, `13_summarize_phase1` (tổng hợp kết quả thành CSV); `opt_reference.py` là bảng OPT dùng chung. **Pha 2:** `07_rn_prepare` (chọn ảnh, sinh instance), `08_ilp_uav`, `09_greedy_uav` (thuật toán đề xuất `proposed` và baseline `naive`), `10_validate_uav`, `11_summarize_rn`, `12_timing_rn`. **Paper:** `14_plots_paper` (vẽ các hình cho `paper/main.tex`) |
 | `pipeline/rn/` | Thư viện Pha 2: `risk.py` (mask → bản đồ rủi ro), `select.py` (chọn ảnh), `routes.py` (sinh route và instance), `budgets.py` (chi phí tham chiếu, ngân sách từng UAV), `store.py` (đường dẫn, đọc/ghi) |
 | `data/raw/OR-Library/` | 45 file Set Covering gốc (bộ 4, 5, 6, A–D) |
 | `data/processed/` | JSON đã chuyển sang chiều gói→ô, 0-indexed (`m, n, costs, sets`) |
@@ -35,7 +35,8 @@ Project nghiên cứu bài toán **Maximum Risk Coverage**, thuộc lớp bài t
 | `docs/` | Tài liệu Pha 1 (`huong-dan-chay`, `mo-hinh-du-lieu`, `ilp-solver-thiet-ke`, `greedy-thuan-thiet-ke`, `greedy-ls-thiet-ke`) và Pha 2 (xem mục "Đọc theo thứ tự nào") |
 | `docs/superpowers/plans/` | Kế hoạch triển khai Pha 2 và nhật ký quyết định, kể cả các lỗi đã gặp |
 | `proposed-algorithm/` | Con trỏ tới thuật toán đề xuất của Pha 2 (code nằm ở `pipeline/09_greedy_uav.py`) |
-| `report/` | Phân công công việc |
+| `paper/` | Bản nháp paper IEEE (tiếng Việt) và các hình trong `paper/figures/` |
+| `report/` | Phân công công việc, kế hoạch bổ sung cho paper |
 | `tests/` | Test bằng pytest (78 test) |
 
 ## Cài đặt và chạy
